@@ -1,36 +1,29 @@
-import streamlit as st
-import plotly.express as px
-from .components import create_table
 import os
+import streamlit as st
+
 def load_css():
     css_path = os.path.join(os.path.dirname(__file__), 'styles.css')
     with open(css_path) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-def create_layout(market_data, tweet_data):
-    st.set_page_config(page_title="My streamlit dashboard")
+def app_layout(market_data, tweet_data):
+    from .content import page_0, page_1, page_2, page_3
+
+    st.set_page_config(page_title="Bitcoin Sentiment Analysis")
     load_css()
-    page = st.sidebar.radio("Select a page", ["Dataset description", "Empty page"])
+    page = st.sidebar.radio("Bitcoin Sentiment Analysis", ["Introduction", "Bitcoin Market Historical Dataset", "Bitcoin Tweets Historical Dataset", "Text_mining"])
 
-    if page == "Dataset description":
-        page_1(market_data, tweet_data)
-    elif page == "Empty page":
-        page_2()
+    if page == "Introduction":
+        page_1(market_data)
+    elif page == "Bitcoin Market Historical Dataset":
+        page_1(market_data)
+    elif page == "Bitcoin Tweets Historical Dataset":
+        page_2(tweet_data)
+    elif page == "Text_mining":
+        page_3()
 
-def page_1(market_data, tweet_data):
-    st.title('Bitcoin Sentiment Analysis')
-    st.markdown('<div class="title">Bitcoin Sentiment Analysis</div>', unsafe_allow_html=True)
-    #st.header('Bitcoin Market Historical Data')
-    market_df = create_table(market_data)
-    st.dataframe(market_df)
 
-    st.header('Bitcoin Tweets Historical Data')
-    tweets_df = create_table(tweet_data)
-    st.dataframe(tweets_df)
 
-def page_2():
-    st.markdown("<h1 style='color: green;'>Visualisations</h1>", unsafe_allow_html=True)
-    st.title('Empty page 2')
 
 
 
