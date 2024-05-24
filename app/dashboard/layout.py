@@ -14,13 +14,13 @@ def app_layout(market_data, tweet_data):
     page = st.sidebar.radio("Bitcoin Sentiment Analysis", ["Introduction", "Bitcoin Market Historical Dataset", "Bitcoin Tweets Historical Dataset", "Text_mining"])
 
     if page == "Introduction":
-        page_1(market_data)
+        page_3(tweet_data)
     elif page == "Bitcoin Market Historical Dataset":
         page_1(market_data)
     elif page == "Bitcoin Tweets Historical Dataset":
         page_2(tweet_data)
     elif page == "Text_mining":
-        page_3()
+        page_3(tweet_data)
 
 
 
