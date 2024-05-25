@@ -1,25 +1,28 @@
 import streamlit as st
-from ..functions import text_mining
+from ..components import create_circular_graph
+from ..functions import text_analysis
 def page_3(tweet_df):
+
     st.markdown('<div class="title">Bitcoin Tweet Sentiment Analysis</div>', unsafe_allow_html=True)
-    st.markdown('<div class="header">Text Mining</div>', unsafe_allow_html=True)
-    st.markdown('<div class="subheader">Phase 1</div>', unsafe_allow_html=True)
-    st.markdown('<div class="text">La première étape consiste à réaliser les différentes opérations de text mining</div>', unsafe_allow_html=True)
+    st.markdown('<div class="header">Twitter data</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="dataframe-container">', unsafe_allow_html=True)
     st.dataframe(tweet_df)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    df = text_mining(tweet_df)
+    st.markdown('<div class="header">Preprocessing</div>', unsafe_allow_html=True)
+    st.markdown("""
+                - conversion en minuscules
+                - suppression des emojis, url, @mention
+                - suppression des stopwords (english, french)
+                - stemmatisation
+                """)
 
-    colonnes = df.columns.tolist()
+    preprocessed_df, occurence_df = text_analysis(tweet_df)
+    st.dataframe(preprocessed_df)
 
-    # Utilisation d'un widget pour réorganiser les colonnes
-    nouvel_ordre = st.multiselect(
-        'Réorganisez les colonnes', colonnes, default=colonnes
-    )
+    st.markdown('<div class="header">occurences:</div>', unsafe_allow_html=True)
+    st.dataframe(occurence_df)
 
-    # Si un nouvel ordre est sélectionné, réorganiser les colonnes du DataFrame
-    if nouvel_ordre:
-        df = df[nouvel_ordre]
-
-    # Affichage du DataFrame réorganisé
-    st.write("DataFrame réorganisé :")
-    st.dataframe(df)
+    #circular_graph = create_circular_graph(occurence_df)
+    #st.plotly_chart(circular_graph)

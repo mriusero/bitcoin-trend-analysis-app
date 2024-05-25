@@ -9,13 +9,22 @@ def load_css():
 def app_layout(market_data, tweet_data):
     from .content import page_0, page_1, page_2, page_3
 
-    st.set_page_config(page_title="Bitcoin Sentiment Analysis")
+    st.set_page_config(
+        page_title="Bitcoin Sentiment Analysis",
+        page_icon=":shark:",
+        layout='wide',
+        initial_sidebar_state="auto",
+        menu_items={
+            'About': "#Github Repository :\n\nhttps://github.com/mriusero/projet-sda-dash-streamlit/blob/main/README.md"
+        }
+    )
+
     load_css()
-    page = st.sidebar.radio("Bitcoin Sentiment Analysis", ["Introduction", "Bitcoin Market Historical Dataset", "Bitcoin Tweets Historical Dataset", "Text_mining"])
+    page = st.sidebar.radio("Bitcoin Sentiment Analysis", ["Introduction", "Market Historical", "Bitcoin Tweets Historical Dataset", "Text_mining"])
 
     if page == "Introduction":
         page_3(tweet_data)
-    elif page == "Bitcoin Market Historical Dataset":
+    elif page == "Market Historical":
         page_1(market_data)
     elif page == "Bitcoin Tweets Historical Dataset":
         page_2(tweet_data)

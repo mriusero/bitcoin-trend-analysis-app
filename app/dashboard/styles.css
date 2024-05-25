@@ -1,7 +1,9 @@
 /* Title styles */
 .title {
     color: #FFFFFF;
-    font-size: 45px;
+    font-size: 60px;
+    margin-top: 10px
+    margin: 15px;
 }
 /* Header styles */
 .header {
@@ -16,14 +18,18 @@
 /* Text styles */
 .text {
     color: #FFFFFF;
-    font-size: 15px;
+    font-size: 25px;
 }
 /* Table styles */
 .table {
     width: 100%;
     border-collapse: collapse;
 }
-
+/* Dataframe styles */
+.dataframe-container {
+    max-width: 100%;  /* Vous pouvez ajuster cette valeur */
+    margin: 0 auto;
+}
 
 /* Options */
     font-family: 'Arial', sans-serif;
