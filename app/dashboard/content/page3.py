@@ -43,5 +43,6 @@ def page_3(market_data, tweet_data):
         display_data = resample(filtered_data, frequency)
         candlestick_chart = create_candlestick_chart(display_data, predictions)
 
+        st.markdown("branch_structure_initialisation")
         st.plotly_chart(candlestick_chart)
         st.dataframe(predictions)
