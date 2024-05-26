@@ -1,7 +1,6 @@
 from collections import Counter
-import regex
-
 import pandas as pd
+import re
 
 def load_csv(file_path):
     df = pd.read_csv(file_path)
@@ -26,23 +25,12 @@ def resample_for_candlesticks(df, frequency):
         display_data = df
     return display_data
 
-def word_chaining_and_count(df):
-    combined_text = ''
-    for col in df.columns:
-        combined_text += ' '.join(df[col].astype(str)) + ' '
-
-    word_counts = Counter(combined_text.split())
+def word_chaining_and_count(text_count):
+    text_count = text_count.replace('[','')
+    text_count = text_count.replace(']',' ')
+    word_counts = Counter(text_count.split())
     sorted_word_counts = sorted(word_counts.items(), key=lambda x: (x[1], x[0]), reverse=True)
+    sorted_word_counts_str = ' '.join([f'[{word}, {count}]' for word, count in sorted_word_counts])
+    return sorted_word_counts_str
 
-    # Création d'une liste de dictionnaires
-    word_count_dicts = [{'word': word, 'count': count} for word, count in sorted_word_counts]
-    # Convertir la liste de dictionnaires en DataFrame
-    result_df = pd.DataFrame(word_count_dicts)
 
-    # Créer une deuxième liste avec les mots dont le count est 1
-    words_with_count_one = result_df[result_df['count'] <= 2]['word'].tolist()
-    # Filtrer les mots par ordre alphabétique inférieur à 'z'
-    #filtered_words = [word for word in words_with_count_one if regex.match(r'^[a-z]+$', word)]
-    print("##################################### FILTERED WORDS\n")
-    print(words_with_count_one)
-    return result_df

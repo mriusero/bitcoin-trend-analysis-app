@@ -15,30 +15,24 @@ def create_candlestick_chart(df):
 
 
 def create_circular_graph(df):
-    # Filtrer les mots avec un Count > 1
-    df_filtered = df[df['count'] > 1]
-
     # Trier le DataFrame par ordre décroissant des comptes
-    df_sorted = df_filtered.sort_values(by='count', ascending=False)
+    df_sorted = df.sort_values(by='count', ascending=False)
+
+    # Calculer les pourcentages des comptes
+    df_sorted['percentage'] = df_sorted['count'] / df_sorted['count'].sum() * 100
 
     # Calculer les pourcentages cumulés
-    df_sorted['cumulative_percentage'] = df_sorted['count'].cumsum() / df_sorted['count'].sum() * 100
+    df_sorted['cumulative_percentage'] = df_sorted['percentage'].cumsum()
 
-    # Tracer le graphique de Pareto
-    fig, ax1 = plt.subplots()
+    # Filtrer les mots pour obtenir ceux qui représentent les 20% les plus utilisés
+    df_filtered = df_sorted[df_sorted['cumulative_percentage'] <= 20]
 
-    ax1.bar(df_sorted['word'], df_sorted['count'], color='b')
-    ax1.set_xlabel('Mots')
-    ax1.set_ylabel('Comptes', color='b')
-    ax1.tick_params('y', colors='b')
+    # Tracer le graphique circulaire
+    fig, ax = plt.subplots()
+    ax.pie(df_filtered['percentage'], labels=df_filtered['word'], autopct='%1.1f%%', startangle=140)
+    ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 
-    ax2 = ax1.twinx()
-    ax2.plot(df_sorted['word'], df_sorted['cumulative_percentage'], color='r', marker='o', linestyle='-')
-    ax2.set_ylabel('Pourcentage cumulatif', color='r')
-    ax2.tick_params('y', colors='r')
-
-    plt.title('Graphique de Pareto')
-    plt.xticks(rotation=90)
+    plt.title('Graphique Circulaire des 20% des Mots les Plus Utilisés')
     plt.tight_layout()
 
     return fig
