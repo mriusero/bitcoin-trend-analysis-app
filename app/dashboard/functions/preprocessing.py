@@ -7,16 +7,13 @@ from nltk.stem import SnowballStemmer
 from nltk.corpus import stopwords
 import ast
 
-# Initialisation globale des stopwords pour éviter de le refaire à chaque appel
 nltk.download('stopwords')
 EN_stopwords = stopwords.words('english')
 FR_stopwords = stopwords.words('french')
 STOP_WORDS = set(EN_stopwords + FR_stopwords)
 
-#Initialisation du Stemmer
 STEMMER = SnowballStemmer("english")
 
-# Compilation des regex une fois pour toutes
 PATTERNS = {
     "emoji": re.compile("["
                         "\U0001F600-\U0001F64F"
@@ -53,7 +50,6 @@ PATTERNS = {
     "finish": re.compile(r'a-z', re.UNICODE),
     "location": re.compile(r'uknwuserloc', regex.UNICODE)
 }
-
 
 def cleaning(text):
     if pd.isnull(text):
@@ -109,15 +105,12 @@ def preprocessing(tweet_data):
 
     df.reset_index(inplace=True)
 
-
     message_text.text("Preprocessing terminé ! 100.00%")
 
     df_A_columns = ['date', 'source', 'user_followers', 'user_verified']
     df_A = tweet_data.loc[:, df_A_columns].copy()
 
-
     df_B_columns = ['date', 'user_location', 'user_description', 'text']
     df_B = df.loc[:, df_B_columns].copy()
 
-    new_df = pd.merge(df_A, df_B, on='date')
-    return new_df
+    return pd.merge(df_A, df_B, on='date')
