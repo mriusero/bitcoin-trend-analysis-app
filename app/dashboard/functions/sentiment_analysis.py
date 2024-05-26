@@ -1,82 +1,76 @@
-import re
 import pandas as pd
-from .resources import stop_words_list
-from nltk.stem import SnowballStemmer
-from collections import Counter
-def preprocessing(text):
-    if pd.isnull(text):
-        return text
-    emoji_pattern = re.compile("["
-                               u"\U0001F600-\U0001F64F"  # Emoticons
-                               u"\U0001F300-\U0001F5FF"  # Symboles & pictogrammes
-                               u"\U0001F680-\U0001F6FF"  # Transport & symboles de cartes
-                               u"\U0001F700-\U0001F77F"  # Symboles alchimiques
-                               u"\U0001F780-\U0001F7FF"  # Symboles géométriques
-                               u"\U0001F800-\U0001F8FF"  # Suppléments de symboles graphiques
-                               u"\U0001F900-\U0001F9FF"  # Suppléments de symboles et de pictogrammes
-                               u"\U0001FA00-\U0001FA6F"  # Suppléments de symboles pictographiques supplémentaires
-                               u"\U0001FA70-\U0001FAFF"  # Suppléments de symboles pictographiques supplémentaires
-                               u"\U00002702-\U000027B0"  # Divers symboles
-                               u"\U000024C2-\U0001F251"  # Symboles alphanumériques
-                               "]+", flags=re.UNICODE)
-    punctuation_pattern = re.compile(r'[^\w\s]', re.UNICODE)
-    https_pattern = re.compile(r'httpstco\w{8,10}', re.UNICODE)
-    digit_pattern = re.compile(r'(\d)', re.UNICODE)
+import streamlit as st
 
-    text = text.lower()
-    text = emoji_pattern.sub(r'', text)
-    text = punctuation_pattern.sub(r'', text)
-    text = https_pattern.sub(r'', text)
-    text = digit_pattern.sub(r'', text)
+from .preprocessing import preprocessing
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from .utils import word_chaining_and_count
 
-    return text
+def get_sentiment(tweet):
+    analyzer = SentimentIntensityAnalyzer()
+    scores = analyzer.polarity_scores(tweet)
+    return scores['compound']
 
-def stop_words(text):
-    if pd.isnull(text):
-        return text
+def aggregate_sentiment(preprocessed_df, frequency):
+    frequency_mapping = {
+        '60min': 'h',
+        '6H': '6h',
+        '12H': '12h',
+        'Weekly': 'W',
+        'Daily': 'D'
+    }
+    if frequency in frequency_mapping:
 
-    ENstopWords = stop_words_list()
-    ENfiltered_text = ' '.join([word for word in text.split() if word not in ENstopWords])
+        # GET SENTIMENT
+        message_text = st.text("Analyse de sentiment ... 0.00%")
 
-    FRstopWords = stop_words_list()
-    filtered_text = ' '.join([word for word in ENfiltered_text.split() if word not in FRstopWords])
+        sentiment_df = preprocessed_df.copy()
+        sentiment_df['user_location'] = sentiment_df['user_location'].apply(lambda x: '[' + x.lower().replace(' ', '_') + ']')
 
-    return filtered_text
-def stemmatise_text(text):
-    stemmer = SnowballStemmer("english")
-    try:
-        stemmed_text = " ".join([stemmer.stem(word) for word in text.split()])
-        return stemmed_text
-    except Exception as e:
-        print("Error during stemming:", e)
-        return stemmed_text
+        nb_tweet = len(sentiment_df['text'])
+        chunk_size = 1000
+        nb_chunks = nb_tweet // chunk_size + 1
 
-def word_chaining_and_count(df, text_columns):
-    combined_text = ''
-    for col in text_columns:
-        if col in df.columns:
-            combined_text += ' '.join(df[col]) + ' '
+        global_df = pd.DataFrame()
 
-    word_list = combined_text.split()
+        for i in range(nb_chunks):
+            start_idx = i * chunk_size
+            end_idx = min((i + 1) * chunk_size, nb_tweet)
 
-    word_counts = Counter(word_list)
-    sorted_word_counts = sorted(word_counts.items(), key=lambda x: (x[1], x[0]))
+            chunk_df = sentiment_df.iloc[start_idx:end_idx]
+            chunk_df.loc[:, 'sentiment_text'] = chunk_df['text'].apply(get_sentiment)
+            chunk_df.loc[:,'sentiment_user'] = chunk_df['user_description'].apply(get_sentiment)
 
-    return sorted_word_counts
+            if not chunk_df.empty:
+                global_df = pd.concat([global_df, chunk_df], ignore_index=False)
+
+            progress = end_idx
+            percentage = round((progress / nb_tweet) * 100, 2)
+            message_text.text(f"Analyse de sentiment ({progress}/{nb_tweet} tweets) {percentage}%")
+
+        global_df = global_df.groupby(pd.Grouper(key='date', freq=frequency_mapping[frequency])).agg(
+                 {
+                'sentiment_text': 'mean',
+                'sentiment_user': 'mean',
+                'text':['sum','count'],
+                'user_description':'sum',
+                'user_followers':'sum',
+                'user_verified':'sum',
+                'user_location':'sum'
+                 }
+        ).reset_index()
+        global_df.dropna(inplace=True)
+        global_df.columns = ['date', 'text_sentiment_mean', 'user_sentiment_mean', 'text', 'nb_tweet', 'user_description', 'followers_sum', 'verified_sum', 'metalocation']
+        global_df['metawords']= global_df['text'] + global_df['user_description']
+        global_df.drop(columns=['text', 'user_description'], inplace=True)
+        global_df['metawords'] = global_df['metawords'].apply(word_chaining_and_count)
+        global_df['metalocation'] = global_df['metalocation'].apply(word_chaining_and_count)
+    return global_df
+    #Ajouter la somme des followers (nombre de fois ou le sentiment à été propagé)
+
+def text_analysis(tweet_df, frequency):
+    preprocessed_df = preprocessing(tweet_df)
+    daily_sentiment = aggregate_sentiment(preprocessed_df, frequency)
+
+    return  preprocessed_df, daily_sentiment
 
 
-def text_mining(tweet_data):
-
-    text_columns = ('user_name', 'text')  # 'user_name',  'user_location', 'user_description', 'hashtags', 'source'
-    df = tweet_data.loc[:, text_columns].copy()
-    for col in text_columns:
-        if col in df.columns:
-            df[col] = df[col].apply(preprocessing)
-            df[col] = df[col].apply(stop_words)
-            df[col] = df[col].apply(stemmatise_text)
-
-    sorted_word_counts = word_chaining_and_count(df, text_columns)
-    print("################# COUNT ######################")
-    print(sorted_word_counts)
-
-    return df
