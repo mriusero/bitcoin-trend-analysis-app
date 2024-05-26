@@ -108,13 +108,13 @@ def preprocessing(tweet_data):
         message_text.text(f"Preprocessing ... {progress_percentage:.2f}%")
 
     df.reset_index(inplace=True)
-    #tweet_data.set_index('date', inplace=True)
+
 
     message_text.text("Preprocessing terminé ! 100.00%")
 
     df_A_columns = ['date', 'source', 'user_followers', 'user_verified']
     df_A = tweet_data.loc[:, df_A_columns].copy()
-    #df_A['user_location'] = df_A['user_location'].apply(lambda x: '[' + x.lower().replace(' ','_') + ']')
+
 
     df_B_columns = ['date', 'user_location', 'user_description', 'text']
     df_B = df.loc[:, df_B_columns].copy()

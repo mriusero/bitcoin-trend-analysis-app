@@ -10,9 +10,9 @@ def load_csv(file_path):
         df["date"] = pd.to_datetime(df["date"], utc=True)
     return df
 
-def resample_for_candlesticks(df, frequency):
+def resample(df, frequency):
     frequency_mapping = {
-        'Hourly': 'h',
+        '60min': 'h',
         '6H': '6h',
         '12H': '12h',
         'Weekly': 'W',

@@ -1,6 +1,6 @@
 import streamlit as st
 from ..components import create_candlestick_chart
-from ..functions import resample_for_candlesticks
+from ..functions import resample
 
 def page_1(market_df):
     # Title
@@ -41,8 +41,8 @@ def page_1(market_df):
         """
         st.markdown(dataset_info)
 
-    frequency = st.selectbox("Select a period", ['Hourly', '6H', '12H', 'Daily', 'Weekly'])
+    frequency = st.selectbox("Select a period", ['60min', '6H', '12H', 'Daily', 'Weekly'])
 
-    display_data = resample_for_candlesticks(market_df, frequency)
+    display_data = resample(market_df, frequency)
     candlestick_chart = create_candlestick_chart(display_data)
     st.plotly_chart(candlestick_chart)

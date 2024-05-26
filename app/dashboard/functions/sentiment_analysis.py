@@ -12,7 +12,7 @@ def get_sentiment(tweet):
 
 def aggregate_sentiment(preprocessed_df, frequency):
     frequency_mapping = {
-        'Hourly': 'h',
+        '60min': 'h',
         '6H': '6h',
         '12H': '12h',
         'Weekly': 'W',
@@ -26,8 +26,8 @@ def aggregate_sentiment(preprocessed_df, frequency):
         sentiment_df = preprocessed_df.copy()
         sentiment_df['user_location'] = sentiment_df['user_location'].apply(lambda x: '[' + x.lower().replace(' ', '_') + ']')
 
-        nb_tweet = len(sentiment_df['text']) 
-        chunk_size = 125
+        nb_tweet = len(sentiment_df['text'])
+        chunk_size = 1000
         nb_chunks = nb_tweet // chunk_size + 1
 
         global_df = pd.DataFrame()
