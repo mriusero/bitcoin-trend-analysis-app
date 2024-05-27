@@ -1,17 +1,16 @@
 import streamlit as st
-from ..components import create_candlestick_chart2
 from ..functions import text_analysis, predict, resample
 import pandas as pd
-def page_3(market_data, tweet_data):
+def page_4(market_data, tweet_data):
     st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)
-    st.markdown('<div class="header">#3 Preprocessing</div>', unsafe_allow_html=True)
+    st.markdown('<div class="header">#4 Sentiment analysis</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="subheader">Description_</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="subheader">Twitter data_ </div>', unsafe_allow_html=True)
     st.dataframe(tweet_data)
 
-    st.markdown('<div class="subheader">Process_ </div>', unsafe_allow_html=True)
+    st.markdown('<div class="subheader">Process_</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="subheader">Results_ </div>', unsafe_allow_html=True)
     frequency = st.selectbox("Select a period", ['60min', '6H', '12H', 'Daily', 'Weekly'])
@@ -32,22 +31,8 @@ def page_3(market_data, tweet_data):
     elif size == '1%':
         arg_size = round(datasize * 0.01)
 
-    st.markdown("Launch analyse:")
-    clicked1 = st.button("►")
+    clicked1 = st.button("Launch Analyse")
     if clicked1:
         preprocessed_df, daily_sentiment = text_analysis(tweet_data.head(arg_size), frequency)
         st.dataframe(daily_sentiment)
 
-    clicked2 = st.button("Predict")
-    if clicked2:
-        predictions = predict(market_data, frequency)
-
-        date_limit = pd.Timestamp('2021-03-12 23:59:14+00:00')
-        filtered_data = market_data[market_data['Timestamp'] < date_limit]
-
-        display_data = resample(filtered_data, frequency)
-        candlestick_chart = create_candlestick_chart2(display_data, predictions)
-
-        st.markdown("branch_structure_initialisation")
-        st.plotly_chart(candlestick_chart)
-        st.dataframe(predictions)

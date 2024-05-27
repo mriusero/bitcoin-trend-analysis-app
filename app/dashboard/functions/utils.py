@@ -19,7 +19,11 @@ def resample(df, frequency):
         'Daily': 'D'
     }
     if frequency in frequency_mapping:
-        display_data = df.resample(frequency_mapping[frequency], on='Timestamp').agg(
+        if 'Timestamp' in df.columns:
+            timestamp_column = 'Timestamp'
+        elif 'date' in df.columns:
+            timestamp_column = 'date'
+        display_data = df.resample(frequency_mapping[frequency], on=timestamp_column).agg(
             {'Open': 'first', 'High': 'max', 'Low': 'min', 'Close': 'last'})
     else:
         display_data = df

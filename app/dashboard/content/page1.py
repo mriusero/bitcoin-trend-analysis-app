@@ -1,13 +1,12 @@
 import streamlit as st
-from ..components import create_candlestick_chart
+from ..components import create_candlestick_chart1
 from ..functions import resample
 
 def page_1(market_df):
-    # Title
-    st.markdown('<div class="title">Market Historical</div>', unsafe_allow_html=True)
+    st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)
+    st.markdown('<div class="header">#1 BTC Market History [dataset A]</div>', unsafe_allow_html=True)
 
-    # Introduction
-
+    st.markdown('<div class="subheader">Description_</div>', unsafe_allow_html=True)
     description = """
                     This dataframe .... description du dataset et introduction de la page
 
@@ -15,7 +14,7 @@ def page_1(market_df):
     st.markdown(description)
 
     # DataFrame
-    st.markdown('<div class="header">DataFrame</div>', unsafe_allow_html=True)
+    st.markdown('<div class="subheader">DataFrame_ </div>', unsafe_allow_html=True)
     col1, col2 = st.columns([5,3])
     with col1:
         st.dataframe(market_df)
@@ -41,8 +40,10 @@ def page_1(market_df):
         """
         st.markdown(dataset_info)
 
-    frequency = st.selectbox("Select a period", ['60min', '6H', '12H', 'Daily', 'Weekly'])
+    st.markdown('<div class="subheader">Market_ </div>', unsafe_allow_html=True)
+
+    frequency = st.selectbox("Select a frequency", ['60min', '6H', '12H', 'Daily', 'Weekly'])
 
     display_data = resample(market_df, frequency)
-    candlestick_chart = create_candlestick_chart(display_data)
+    candlestick_chart = create_candlestick_chart1(display_data)
     st.plotly_chart(candlestick_chart)
