@@ -33,29 +33,37 @@ def page_5(market_data, tweet_data):
         cols = st.columns(len(group))
         for j, (col, frequency) in enumerate(zip(cols, group)):
             # Vérifier si c'est la dernière colonne
-            if i == len(frequency_groups) - 1 and j == len(group) - 5:
+            if i == len(frequency_groups) - 1 and j == len(group) - 3:
                 selected_frequency = col.selectbox("Select Frequency:", group,
                                                key=frequency)  # Utiliser frequency comme clé unique
+            elif i == len(frequency_groups) - 1 and j == len(group) - 5:
+                X_selected = col.multiselect('Select X:', ['Open', 'High', 'Low', 'Close', 'av_price',
+                                                                 'text_sentiment_mean', 'user_sentiment_mean',
+                                                                 'nb_tweet', 'followers_sum', 'verified_sum'
+                                                                 ])
             elif i == len(frequency_groups) - 1 and j == len(group) - 4:
-                selected_option1 = col.multiselect('Select Option 1:', ['Option 1', 'Option 2',
-                                                                        'Option 3'])  # Ajouter le multiselect dans la troisième colonne
-            elif i == len(frequency_groups) - 1 and j == len(group) - 3:
-                selected_option2 = col.multiselect('Select Option 2:', ['Option 1', 'Option 2',
-                                                                        'Option 3'])
+                Y_selected = col.selectbox('Select Y:', ['Open', 'High', 'Low', 'Close', 'av_price',
+                                                                 'text_sentiment_mean', 'user_sentiment_mean',
+                                                                 'nb_tweet', 'followers_sum', 'verified_sum'])
             elif i == len(frequency_groups) - 1 and j == len(group) - 2:
                 selected_test_size = col.slider('Test size (%)', 1, 100, 20)  # Afficher le slider dans l'avant-dernière colonne
                 test_size = selected_test_size / 100
+            elif i == len(frequency_groups) - 1 and j == len(group) - 1:
+                if st.button('Predict'):
+
+                    if not X_selected:
+                        st.error("Please select at least one feature for X.")
+                        return
+                    if 'selected_frequency' not in locals():
+                        selected_frequency = st.radio("", frequencies)
+
+                    if selected_frequency:
+                        frequency = frequency_map[selected_frequency]
+                    else:
+                        frequency = 'No frequency selected'
+                        st.text(f"Please select a frequency")
+
+                    predict(market_data, frequency, test_size, X_selected, Y_selected)
 
 
-    # Récupérer la fréquence sélectionnée
-    if 'selected_frequency' not in locals():
-        selected_frequency = st.radio("", frequencies)
-
-    if selected_frequency:
-        frequency = frequency_map[selected_frequency]
-    else:
-        frequency = 'No frequency selected'
-        st.text(f"Please select a frequency")
-
-    predict(market_data, frequency, test_size)
 
