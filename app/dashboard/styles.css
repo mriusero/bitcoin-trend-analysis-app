@@ -21,7 +21,8 @@
 /* Text styles */
 .text {
     color: #FFFFFF;
-    font-size: 25px;
+    font-family: sans-serif;
+    font-size: 12px;
 }
 /* Table styles */
 .table {

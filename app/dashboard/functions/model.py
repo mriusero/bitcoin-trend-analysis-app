@@ -45,13 +45,14 @@ def predict(market_data, frequency, test_size, X_selected, Y_selected):
     residuals = y_test - predictions
 
     rmse = mean_squared_error(y_test, predictions, squared=False)
-    print("RMSE:", rmse)
-    print("Coefficients:", model.coef_)
+
 
     df['prediction'] = model.predict(X)
 
     candlestick_chart = create_candlestick_chart2(df)
     st.plotly_chart(candlestick_chart)
+    st.text(f"RMSE: {rmse}")
+    st.text(f"Coefficients: {model.coef_}")
 
     visualise_performance(model, X, y, y_test, predictions, residuals)
 

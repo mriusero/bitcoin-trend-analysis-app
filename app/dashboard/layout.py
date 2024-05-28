@@ -23,7 +23,7 @@ def app_layout(market_data, tweet_data):
     page = st.sidebar.radio(" ~ BTC Sentiment Analysis ~ ", ["Introduction", "#1_ BTC Market History [dataset A]", "#2_ BTC Twitter History [dataset B]", "#3_ Preprocessing", "#4_ Sentiment analysis", "#5_ Price prediction", "Conclusion"])
 
     if page == "Introduction":
-        page_3(market_data, tweet_data)
+        page_0()
     elif page == "#1_ BTC Market History [dataset A]":
         page_1(market_data)
     elif page == "#2_ BTC Twitter History [dataset B]":

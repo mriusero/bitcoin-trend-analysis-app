@@ -1,5 +1,5 @@
 import streamlit as st
-from ..components import create_candlestick_chart1
+from ..components import create_candlestick_chart1, gaussian_curve, volume_curve
 from ..functions import resample
 
 def page_1(market_df):
@@ -7,18 +7,30 @@ def page_1(market_df):
     st.markdown('<div class="header">#1 BTC Market History [dataset A]</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="subheader">Description_</div>', unsafe_allow_html=True)
+    st.text("")
     description = """
-                    This dataframe .... description du dataset et introduction de la page
+            Start date (UTC) | 2011-12-31 07:52:00+00:00
+            End date   (UTC) | 2021-03-31 00:00:00+00:00
+            Period     (UTC) | 3377 days 16:08:00
+            
+            --> [Open]______________________prix d'ouverture au début de la fenêtre temporelle
+            --> [High]______________________prix le plus élevé dans la fenêtre temporelle
+            --> [Low]_______________________prix le plus bas dans la fenêtre temporelle
+            --> [Close]_____________________prix de clôture à la fin de la fenêtre temporelle
+            --> [Volume_(BTC)]______________volume de BTC échangé dans cette fenêtre
+            --> [Volume_(Currency)]_________volume de la devise correspondante échangée dans cette fenêtre
+            --> [Weighted_Price]____________vwap (prix moyen pondéré par le volume)           
+                 """
 
-    """
-    st.markdown(description)
+    st.text(description)
 
     # DataFrame
     st.markdown('<div class="subheader">DataFrame_ </div>', unsafe_allow_html=True)
+    st.text("")
+
     col1, col2 = st.columns([5,3])
     with col1:
         st.dataframe(market_df)
-        st.markdown("""**data origin:** https://www.kaggle.com/datasets/mczielinski/bitcoin-historical-data""")
     with col2:
         dataset_info = """              
         *              ------ Bitcoin market historical DataFrame ------
@@ -40,10 +52,39 @@ def page_1(market_df):
         """
         st.markdown(dataset_info)
 
-    st.markdown('<div class="subheader">Market_ </div>', unsafe_allow_html=True)
+    st.markdown('<div class="subheader">Columns_ </div>', unsafe_allow_html=True)
+    st.text("")
 
-    frequency = st.selectbox("Select a frequency", ['60min', '6H', '12H', 'Daily', 'Weekly'])
+    num_figures = 4
+    figures = []
+    for i in range(1, num_figures + 1):
+        fig = gaussian_curve(market_df.iloc[:, i])
+        figures.append(fig)
+
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.pyplot(figures[0])
+    with col2:
+        st.pyplot(figures[2])
+    with col3:
+        st.pyplot(figures[1])
+    with col4:
+        st.pyplot(figures[3])
+
+    st.markdown('<div class="subheader">Market_ </div>', unsafe_allow_html=True)
+    #st.text("Please select a frequency:")
+    frequency = st.selectbox("", ['60min', '6H', '12H', 'Daily', 'Weekly'])
 
     display_data = resample(market_df, frequency)
+
     candlestick_chart = create_candlestick_chart1(display_data)
     st.plotly_chart(candlestick_chart)
+
+    fig_btc, fig_currency = volume_curve(display_data)
+    col1, col2 = st.columns(2)
+    with col1:
+        st.pyplot(fig_btc)
+    with col2:
+        st.pyplot(fig_currency)
+
+    st.markdown("""**data origin:** https://www.kaggle.com/datasets/mczielinski/bitcoin-historical-data""")
