@@ -1,6 +1,6 @@
 import streamlit as st
 from ..components import create_candlestick_chart2
-from ..functions import text_analysis, predict, resample
+from ..functions import predict, resample
 import pandas as pd
 def page_5(market_data, tweet_data):
     st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)

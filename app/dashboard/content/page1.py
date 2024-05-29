@@ -2,16 +2,16 @@ import streamlit as st
 from ..components import create_candlestick_chart1, gaussian_curve, volume_curve
 from ..functions import resample
 
-def page_1(market_df):
+def page_1(market_data):
     st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)
     st.markdown('<div class="header">#1 BTC Market History [dataset A]</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="subheader">Description_</div>', unsafe_allow_html=True)
     st.text("")
     description = """
-            Start date (UTC) | 2011-12-31 07:52:00+00:00
+            Start date (UTC) | 2021-02-05 10:52:04+00:00
             End date   (UTC) | 2021-03-31 00:00:00+00:00
-            Period     (UTC) | 3377 days 16:08:00
+            Period     (UTC) | 53 days 13:07:56
             
             --> [Open]______________________prix d'ouverture au début de la fenêtre temporelle
             --> [High]______________________prix le plus élevé dans la fenêtre temporelle
@@ -30,7 +30,9 @@ def page_1(market_df):
 
     col1, col2 = st.columns([5,3])
     with col1:
-        st.dataframe(market_df)
+        st.dataframe(market_data)
+        st.text("--> see app/data/exploration/dataset_exploration.ipynb for initial dataset")
+
     with col2:
         dataset_info = """              
         *              ------ Bitcoin market historical DataFrame ------
@@ -58,7 +60,7 @@ def page_1(market_df):
     num_figures = 4
     figures = []
     for i in range(1, num_figures + 1):
-        fig = gaussian_curve(market_df.iloc[:, i])
+        fig = gaussian_curve(market_data.iloc[:, i])
         figures.append(fig)
 
     col1, col2, col3, col4 = st.columns(4)
@@ -75,7 +77,7 @@ def page_1(market_df):
     #st.text("Please select a frequency:")
     frequency = st.selectbox("", ['60min', '6H', '12H', 'Daily', 'Weekly'])
 
-    display_data = resample(market_df, frequency)
+    display_data = resample(market_data, frequency)
 
     candlestick_chart = create_candlestick_chart1(display_data)
     st.plotly_chart(candlestick_chart)

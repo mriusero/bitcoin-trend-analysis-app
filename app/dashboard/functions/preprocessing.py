@@ -90,27 +90,27 @@ def preprocessing(tweet_data):
     message_text = st.text("Preprocessing ... 0.00%")
 
     tweet_data.loc[:, 'hashtags'] = tweet_data['hashtags'].apply(convert_hashtags)
-    text_columns = ['date','user_location', 'user_description', 'text']
+    text_columns = ['date','source', 'user_location', 'user_description', 'text']
     df = tweet_data.loc[:, text_columns].copy()
     df.set_index('date', inplace=True)
 
-    nb_tweet = len(df['text'])
+    nb_col = len(text_columns)
 
     for i, col in enumerate(text_columns, start=1):
         if col in df.columns:
             df[col] = df[col].apply(lambda x: stemmatise(stop_words(cleaning(x))))
 
-        progress_percentage = (i / nb_tweet * 100)
+        progress_percentage = (i / nb_col * 100)
         message_text.text(f"Preprocessing ... {progress_percentage:.2f}%")
 
     df.reset_index(inplace=True)
 
     message_text.text("Preprocessing terminé ! 100.00%")
 
-    df_A_columns = ['date', 'source', 'user_followers', 'user_verified']
-    df_A = tweet_data.loc[:, df_A_columns].copy()
+    df_B_columns = ['date', 'user_followers', 'user_verified']
+    df_B = tweet_data.loc[:, df_B_columns].copy()
 
-    df_B_columns = ['date', 'user_location', 'user_description', 'text']
-    df_B = df.loc[:, df_B_columns].copy()
+    df_A_columns = ['date', 'source', 'user_location', 'user_description', 'text']
+    df_A = df.loc[:, df_A_columns].copy()
 
     return pd.merge(df_A, df_B, on='date')

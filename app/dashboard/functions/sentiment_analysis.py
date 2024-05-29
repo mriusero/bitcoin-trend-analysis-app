@@ -67,10 +67,10 @@ def aggregate_sentiment(preprocessed_df, frequency):
     return global_df
     #Ajouter la somme des followers (nombre de fois ou le sentiment à été propagé)
 
-def text_analysis(tweet_df, frequency):
-    preprocessed_df = preprocessing(tweet_df)
-    daily_sentiment = aggregate_sentiment(preprocessed_df, frequency)
-
-    return  preprocessed_df, daily_sentiment
+#def text_analysis(tweet_df, frequency):
+#    preprocessed_df = preprocessing(tweet_df)
+#    daily_sentiment = aggregate_sentiment(preprocessed_df, frequency)
+#
+#    return  preprocessed_df, daily_sentiment
 
 
