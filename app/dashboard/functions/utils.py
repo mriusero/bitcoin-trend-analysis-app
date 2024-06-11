@@ -19,10 +19,23 @@ def resample(df, frequency):
         'Daily': 'D'
     }
     if frequency in frequency_mapping:
-        display_data = df.resample(frequency_mapping[frequency], on='Timestamp').agg(
-            {'Open': 'first', 'High': 'max', 'Low': 'min', 'Close': 'last'})
+        if 'Timestamp' in df.columns:
+            timestamp_column = 'Timestamp'
+        elif 'date' in df.columns:
+            timestamp_column = 'date'
+        display_data = df.resample(frequency_mapping[frequency], on=timestamp_column).agg(
+            {'Open': 'first',
+             'High': 'max',
+             'Low': 'min',
+             'Close': 'last',
+             'Volume_(BTC)': 'sum',
+             'Volume_(Currency)':'sum'
+             }
+        )
+        display_data["Weighted_Price"] = display_data["Volume_(Currency)"] / display_data["Volume_(BTC)"]
     else:
         display_data = df
+
     return display_data
 
 def word_chaining_and_count(text_count):

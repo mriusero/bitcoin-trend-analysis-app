@@ -1,13 +1,72 @@
 import streamlit as st
 
 def page_2(tweet_data):
-    st.markdown('<div class="title">Bitcoin Tweets Historical Dataset</div>', unsafe_allow_html=True)
-    st.markdown('<div class="text">Ceci est une description</div>', unsafe_allow_html=True)
+    st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)
+    st.markdown('<div class="header">#2 BTC Twitter History [dataset B]</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="subheader">Description_</div>', unsafe_allow_html=True)
+    col1, col2 = st.columns(2)
+    with col1:
+        st.text("")
+        description = """
+        
+        
+        
+        Start date (UTC) | 2021-02-05 10:52:04+00:00
+        End date   (UTC) | 2021-03-31 00:00:00+00:00
+        Period     (UTC) | 53 days 13:07:56    
+                    
+        [user_name]         -->     le nom de l'utilisateur.
+        [user_location]     -->     la localisation définie par l'utilisateur.
+        [user_description]  -->     la description du profil de l'utilisateur.
+        [user_created]      -->     date et heure de création du compte.
+        [user_followers]    -->     le nombre de followers du compte.
+        [user_friends]      -->     le nombre d'amis du compte.
+        [user_favourites]   -->     le nombre de favoris du compte.
+        [user_verified]     -->     (booléen) true indique que l'utilisateur a un compte vérifié.
+        [date]              -->     date et heure UTC de l'édition du tweet.
+        [text]              -->     le tweet.
+        [hashtags]          -->     les hashtags postés dans le tweet.
+        [source]            -->     moyen d'édition du tweet.
+        [is_retweet]        -->     (booléen) true indique qu'il s'agit d'un retweet.'   
+                         """
+
+        st.text(description)
+    with col2:
+        dataset_info = """
+        *             ------ Bitcoin tweets historical DataFrame ------
+            
+              <class 'pandas.core.frame.DataFrame'>
+              Index: 48583 entries, 0 to 48582
+              Data columns (total 13 columns):
+               #   Column            Non-Null Count  Dtype              
+              ---  ------            --------------  -----              
+               0   user_name         48583 non-null  object             
+               1   user_location     48583 non-null  object             
+               2   user_description  48583 non-null  object             
+               3   user_created      48583 non-null  object             
+               4   user_followers    48583 non-null  object             
+               5   user_friends      48583 non-null  object             
+               6   user_favourites   48583 non-null  object             
+               7   user_verified     48583 non-null  object             
+               8   date              48583 non-null  datetime64[ns, UTC]
+               9   text              48583 non-null  object             
+               10  hashtags          48583 non-null  object             
+               11  source            48583 non-null  object             
+               12  is_retweet        48583 non-null  object             
+              dtypes: datetime64[ns, UTC](1), object(12)
+              memory usage: 5.2+ MB
+        """
+        st.markdown(dataset_info)
+
+
+
+
 
     st.dataframe(tweet_data)
 
     st.markdown('''
-        ### Hypothèses
+        ### Hypotheses
 
         1. **Analyse de Sentiment sur les Textes des Tweets**
 
