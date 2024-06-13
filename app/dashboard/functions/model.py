@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
 
-from sklearn.model_selection import train_test_split, learning_curve
+from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 
@@ -12,8 +12,6 @@ from .performance import visualise_performance
 def prepare_data(market_data, frequency):
     df_A = resample(market_data, frequency)
     df_A.reset_index(drop=False, inplace=True)
-    #date_limit = pd.Timestamp('2021-03-12 23:59:14+00:00')
-    #df_A = df_A[df_A['Timestamp'] < date_limit]
 
     df_A['av_price'] = round(df_A[['Open', 'High', 'Low', 'Close']].mean(axis=1),2)
     df_A.rename(columns={'Timestamp': 'date'}, inplace=True)

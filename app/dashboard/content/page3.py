@@ -6,12 +6,6 @@ def page_3(market_data, tweet_data):
     st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)
     st.markdown('<div class="header">#3 Price prediction</div>', unsafe_allow_html=True)
 
-    #st.markdown('<div class="subheader">Description_</div>', unsafe_allow_html=True)
-    #st.markdown('<div class="text">  </div>', unsafe_allow_html=True)
-#
-    #st.markdown('<div class="subheader">Process_</div>', unsafe_allow_html=True)
-    #st.markdown('<div class="text">  </div>', unsafe_allow_html=True)
-
     st.markdown('<div class="subheader">Model_</div>', unsafe_allow_html=True)
     st.markdown('<div class="text">  </div>', unsafe_allow_html=True)
 

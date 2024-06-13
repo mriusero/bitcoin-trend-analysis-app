@@ -1,5 +1,5 @@
 import streamlit as st
-from ..functions import preprocessing, aggregate_sentiment
+from ..functions import preprocessing, aggregate_sentiment, shape_wordcloud, load_csv
 def page_2(tweet_data):
     st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)
     st.markdown('<div class="header">#2 BTC Twitter History [dataset B]</div>', unsafe_allow_html=True)
@@ -8,9 +8,7 @@ def page_2(tweet_data):
     col1, col2 = st.columns(2)
     with col1:
         st.text("")
-        description = """
-        
-        
+        description = """       
         
         Start date (UTC) | 2021-02-05 10:52:04+00:00
         End date   (UTC) | 2021-03-31 00:00:00+00:00
@@ -61,15 +59,6 @@ def page_2(tweet_data):
 
     st.dataframe(tweet_data)
 
-    st.markdown('<div class="subheader">Preprocessing_ </div>', unsafe_allow_html=True)
-
-    st.markdown("")
-    clicked1 = st.button("►")
-    if clicked1:
-        preprocessed_df = preprocessing(tweet_data)
-        st.session_state['preprocessed_df'] = preprocessed_df
-        st.dataframe(preprocessed_df)
-
     st.markdown('<div class="subheader">Sentiment analysis_ </div>', unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
@@ -88,9 +77,26 @@ def page_2(tweet_data):
     st.markdown("Launch sentiment analysis (sample):")
     clicked2 = st.button("Sentiment analysis")
     if clicked2:
-        if 'preprocessed_df' in st.session_state:
-            preprocessed_df = st.session_state['preprocessed_df']
-            daily_sentiment = aggregate_sentiment(preprocessed_df.head(arg_size), frequency)
-            st.dataframe(daily_sentiment)
-        else:
-            st.error("Please run the preprocessing step first by clicking the 'See' button.")
+        preprocessed_df = preprocessing(tweet_data)
+        st.dataframe(preprocessed_df)
+
+        daily_sentiment = aggregate_sentiment(preprocessed_df.head(arg_size), frequency)
+        st.dataframe(daily_sentiment)
+
+    st.markdown('<div class="subheader">Wordcloud_ </div>', unsafe_allow_html=True)
+    st.text("")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        theme = "metalocation"
+        st.text("#Metalocation_ (user_location)")
+        df_sentiment = load_csv(f"./data/sentiment/sentiment_analysis_({frequency}).csv")
+        wordcloud = shape_wordcloud(df_sentiment, theme)
+        st.image(wordcloud)
+
+    with col2:
+        theme = "metawords"
+        st.text("#Metawords_ (user_description + text)")
+        df_sentiment = load_csv(f"./data/sentiment/sentiment_analysis_({frequency}).csv")
+        wordcloud = shape_wordcloud(df_sentiment, theme)
+        st.image(wordcloud)

@@ -1,6 +1,4 @@
 import streamlit as st
-import subprocess
-import os
 def page_0():
     st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)
     st.markdown('<div class="header">#0 Data Management_</div>', unsafe_allow_html=True)
