@@ -23,7 +23,7 @@ def page_1(market_data):
                  """
 
     st.text(description)
-
+    st.markdown("""**data origin:** https://www.kaggle.com/datasets/mczielinski/bitcoin-historical-data""")
     # DataFrame
     st.markdown('<div class="subheader">DataFrame_ </div>', unsafe_allow_html=True)
     st.text("")
@@ -89,4 +89,3 @@ def page_1(market_data):
     with col2:
         st.pyplot(fig_currency)
 
-    st.markdown("""**data origin:** https://www.kaggle.com/datasets/mczielinski/bitcoin-historical-data""")

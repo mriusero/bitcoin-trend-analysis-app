@@ -1,47 +1,69 @@
 import streamlit as st
-
-from ..functions import preprocessing, aggregate_sentiment
-
+from ..components import create_candlestick_chart2
+from ..functions import predict, resample
+import pandas as pd
 def page_3(market_data, tweet_data):
     st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)
-    st.markdown('<div class="header">#3 Sentiment Analysis</div>', unsafe_allow_html=True)
+    st.markdown('<div class="header">#3 Price prediction</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="subheader">Initial data_ </div>', unsafe_allow_html=True)
-    st.dataframe(tweet_data)
+    #st.markdown('<div class="subheader">Description_</div>', unsafe_allow_html=True)
+    #st.markdown('<div class="text">  </div>', unsafe_allow_html=True)
+#
+    #st.markdown('<div class="subheader">Process_</div>', unsafe_allow_html=True)
+    #st.markdown('<div class="text">  </div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="subheader">Model_</div>', unsafe_allow_html=True)
+    st.markdown('<div class="text">  </div>', unsafe_allow_html=True)
+
+    num_columns = 5
+    frequency_map = {
+        "60min": "60min",
+        "6H": "6H",
+        "12H": "12H",
+        "Daily": "Daily",
+        "Weekly": "Weekly"
+    }
+    frequencies = list(frequency_map.keys())
+
+    # Diviser les fréquences en groupes pour les afficher sur plusieurs colonnes
+    frequency_groups = [frequencies[i:i + num_columns] for i in range(0, len(frequencies), num_columns)]
+
+    # Afficher les radios et le slider sur plusieurs colonnes
+    for i, group in enumerate(frequency_groups):
+        cols = st.columns(len(group))
+        for j, (col, frequency) in enumerate(zip(cols, group)):
+            # Vérifier si c'est la dernière colonne
+            if i == len(frequency_groups) - 1 and j == len(group) - 3:
+                selected_frequency = col.selectbox("Select Frequency:", group,
+                                               key=frequency)  # Utiliser frequency comme clé unique
+            elif i == len(frequency_groups) - 1 and j == len(group) - 5:
+                X_selected = col.multiselect('Select X:', ['Open', 'High', 'Low', 'Close', 'av_price',
+                                                                 'text_sentiment_mean', 'user_sentiment_mean',
+                                                                 'nb_tweet', 'followers_sum', 'verified_sum'
+                                                                 ])
+            elif i == len(frequency_groups) - 1 and j == len(group) - 4:
+                Y_selected = col.selectbox('Select Y:', ['Open', 'High', 'Low', 'Close', 'av_price',
+                                                                 'text_sentiment_mean', 'user_sentiment_mean',
+                                                                 'nb_tweet', 'followers_sum', 'verified_sum'])
+            elif i == len(frequency_groups) - 1 and j == len(group) - 2:
+                selected_test_size = col.slider('Test size (%)', 1, 100, 20)  # Afficher le slider dans l'avant-dernière colonne
+                test_size = selected_test_size / 100
+            elif i == len(frequency_groups) - 1 and j == len(group) - 1:
+                if st.button('Predict'):
+
+                    if not X_selected:
+                        st.error("Please select at least one feature for X.")
+                        return
+                    if 'selected_frequency' not in locals():
+                        selected_frequency = st.radio("", frequencies)
+
+                    if selected_frequency:
+                        frequency = frequency_map[selected_frequency]
+                    else:
+                        frequency = 'No frequency selected'
+                        st.text(f"Please select a frequency")
+
+                    predict(market_data, frequency, test_size, X_selected, Y_selected)
 
 
 
-
-    st.markdown('<div class="subheader">Preprocessing_ </div>', unsafe_allow_html=True)
-
-    st.markdown("")
-    clicked1 = st.button("►")
-    if clicked1:
-        preprocessed_df = preprocessing(tweet_data)
-        st.session_state['preprocessed_df'] = preprocessed_df
-        st.dataframe(preprocessed_df)
-
-    st.markdown('<div class="subheader">Sentiment analysis_ </div>', unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
-    with col1:
-        frequency = st.selectbox("Select a period", ['60min', '6H', '12H', 'Daily', 'Weekly'])
-    with col2:
-        size = st.selectbox("Select the size analyse", ['10%', '5%', '1%'])
-        datasize = len(tweet_data['text']) + 1
-
-        if size == '10%':
-            arg_size = round(datasize * 0.1)
-        elif size == '5%':
-            arg_size = round(datasize * 0.05)
-        elif size == '1%':
-            arg_size = round(datasize * 0.01)
-
-    st.markdown("Launch sentiment analysis (sample):")
-    clicked2 = st.button("Sentiment analysis")
-    if clicked2:
-        if 'preprocessed_df' in st.session_state:
-            preprocessed_df = st.session_state['preprocessed_df']
-            daily_sentiment = aggregate_sentiment(preprocessed_df.head(arg_size), frequency)
-            st.dataframe(daily_sentiment)
-        else:
-            st.error("Please run the preprocessing step first by clicking the 'See' button.")
