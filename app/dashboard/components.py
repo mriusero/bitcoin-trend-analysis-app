@@ -6,7 +6,7 @@ from scipy.stats import norm
 ##COLOR##
 blue_on_graph = '#20edfa'
 green_on_graph = '#09AB3B'
-red_on_graph = '#B40426'
+red_on_graph = '#d93338'
 background = '#262730'
 blue_curve= '#3526da'
 bitcoin='#ED6F13'
@@ -22,7 +22,7 @@ def gaussian_curve(column_data):
     fig, ax = plt.subplots(figsize=(6, 4))
     ax.plot(x, p, linewidth=4, color=green_on_graph, label='Gaussian Curve')
     ax.hist(column_data, bins=30, density=True, alpha=0.5, color=blue_on_graph)
-    ax.set_title(f'Column {column_data.name}', color="white")
+    ax.set_title(f'{column_data.name}_', color="white", size=20, loc='right')
 
     ax.yaxis.set_label_position('right')
     ax.yaxis.tick_right()
@@ -32,6 +32,9 @@ def gaussian_curve(column_data):
 
     for spine in ax.spines.values():
         spine.set_edgecolor('none')
+
+    ax.tick_params(axis='x', which='both', color='white')
+    ax.tick_params(axis='y', which='both', color='white')
 
     plt.setp(ax.get_xticklabels(), color="white", size='12')
     plt.setp(ax.get_yticklabels(), color="white", size='12')

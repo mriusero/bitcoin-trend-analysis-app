@@ -1,4 +1,5 @@
 from collections import Counter
+from datetime import timedelta
 import pandas as pd
 
 def load_csv(file_path):
@@ -34,7 +35,6 @@ def resample(df, frequency):
         display_data["Weighted_Price"] = display_data["Volume_(Currency)"] / display_data["Volume_(BTC)"]
     else:
         display_data = df
-    print(display_data)
     return display_data
 
 def word_chaining_and_count(text_count):
@@ -46,15 +46,32 @@ def word_chaining_and_count(text_count):
     return sorted_word_counts_str
 
 def calculate_statistics(df):
+
+    if 'user_since_mean' in df.columns:
+        df['user_since_mean'] = df['user_since_mean'].apply(duration_to_seconds)
+        stat_df = df
+    else:
+        stat_df = df.select_dtypes(exclude=['datetime', 'datetime64[ns]', 'datetime64[ns, UTC]'])
+
     results = {
-        'MIN': df.min(),
-        'MEAN': df.mean(),
-        'MEDIAN': df.median(),
-        'STD': df.std(),
-        'MAX': df.max(),
+        'MIN': stat_df.min(),
+        'MEDIAN': stat_df.median(),
+        'MEAN': stat_df.mean(),
+        'STD': stat_df.std(),
+        'MAX': stat_df.max(),
     }
     statistics = pd.DataFrame(results)
     statistics = statistics.T
-    statistics = statistics.drop('Timestamp', axis=1)
     return statistics
 
+def duration_to_seconds(duration_str):
+    days, time_str = duration_str.split(' days ')
+    hours, minutes, seconds = map(int, time_str.split(':'))
+    return int(days) * 86400 + hours * 3600 + minutes * 60 + seconds
+
+def seconds_to_duration(seconds):
+    duration = timedelta(seconds=seconds)
+    days = duration.days
+    hours, remainder = divmod(duration.seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"{days} days {hours:02}:{minutes:02}:{seconds:02}"

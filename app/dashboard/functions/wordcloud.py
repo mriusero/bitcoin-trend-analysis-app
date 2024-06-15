@@ -5,14 +5,13 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
 def shape_wordcloud(df, theme):
-
     word_freq = defaultdict(int)
     for entry in df[theme]:
         pairs = re.findall(r'\[([^,]+), (\d+)\]', entry)    # Extraire les paires mot-fréquence
         for word, freq in pairs:
             word_freq[word] += int(freq)
 
-    wordcloud = WordCloud(width=1000, height=1000, background_color='white').generate_from_frequencies(word_freq)
+    wordcloud = WordCloud(width=600, height=600, background_color='white').generate_from_frequencies(word_freq)
 
     fig, ax = plt.subplots(figsize=(10, 10), facecolor='white')
     ax.imshow(wordcloud, interpolation='bilinear')

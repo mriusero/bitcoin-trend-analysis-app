@@ -3,7 +3,7 @@ import streamlit as st
 
 from .preprocessing import preprocessing
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-from .utils import word_chaining_and_count
+from .utils import duration_to_seconds, seconds_to_duration, word_chaining_and_count
 
 def get_sentiment(tweet):
     analyzer = SentimentIntensityAnalyzer()
@@ -19,15 +19,19 @@ def aggregate_sentiment(preprocessed_df, frequency):
         'Daily': 'D'
     }
     if frequency in frequency_mapping:
-
-        # GET SENTIMENT
+        sentiment_df = preprocessed_df.copy()
         message_text = st.text("Analyse de sentiment ... 0.00%")
 
-        sentiment_df = preprocessed_df.copy()
+        columns_to_cast = ['source', 'user_location', 'user_description', 'text', 'hashtags']
+        sentiment_df[columns_to_cast] = sentiment_df[columns_to_cast].astype(str)
+
+        sentiment_df['user_since']=sentiment_df['user_since'].apply(duration_to_seconds)
+
+        sentiment_df['source'] = sentiment_df['source'].apply(lambda x: '[' + x.lower().replace(' ', '_') + ']')
         sentiment_df['user_location'] = sentiment_df['user_location'].apply(lambda x: '[' + x.lower().replace(' ', '_') + ']')
 
         nb_tweet = len(sentiment_df['text'])
-        chunk_size = 1000
+        chunk_size = 2500
         nb_chunks = nb_tweet // chunk_size + 1
 
         global_df = pd.DataFrame()
@@ -51,26 +55,45 @@ def aggregate_sentiment(preprocessed_df, frequency):
                  {
                 'sentiment_text': 'mean',
                 'sentiment_user': 'mean',
+                'user_since':'mean',
                 'text':['sum','count'],
                 'user_description':'sum',
                 'user_followers':'sum',
+                'user_friends': 'sum',
+                'user_favourites':'sum',
                 'user_verified':'sum',
-                'user_location':'sum'
+                'user_location':'sum',
+                'source': 'sum',
+                'hashtags': 'sum'
                  }
         ).reset_index()
         global_df.dropna(inplace=True)
-        global_df.columns = ['date', 'text_sentiment_mean', 'user_sentiment_mean', 'text', 'nb_tweet', 'user_description', 'followers_sum', 'verified_sum', 'metalocation']
-        global_df['metawords']= global_df['text'] + global_df['user_description']
-        global_df.drop(columns=['text', 'user_description'], inplace=True)
-        global_df['metawords'] = global_df['metawords'].apply(word_chaining_and_count)
-        global_df['metalocation'] = global_df['metalocation'].apply(word_chaining_and_count)
-    return global_df
-    #Ajouter la somme des followers (nombre de fois ou le sentiment à été propagé)
+        global_df.columns = ['date',
+                             'text_sentiment_mean',
+                             'user_sentiment_mean',
+                             'user_since_mean',
+                             'text', 'tweet_sum',
+                             'user_description',
+                             'followers_sum',
+                             'friends_sum',
+                             'favorites_sum',
+                             'verified_sum',
+                             'location_sum',
+                             'source_sum',
+                             'hashtags_sum']
 
-#def text_analysis(tweet_df, frequency):
-#    preprocessed_df = preprocessing(tweet_df)
-#    daily_sentiment = aggregate_sentiment(preprocessed_df, frequency)
-#
-#    return  preprocessed_df, daily_sentiment
+        global_df['user_since_mean'] = global_df['user_since_mean'].apply(seconds_to_duration)
+        global_df['words'] = global_df['text'] + global_df['user_description']
+        global_df = global_df.assign(
+            metalocation=global_df['location_sum'].apply(word_chaining_and_count),
+            metasource=global_df['source_sum'].apply(word_chaining_and_count),
+            metahashtags=global_df['hashtags_sum'].apply(word_chaining_and_count),
+            metawords=global_df['words'].apply(word_chaining_and_count)
+        )
+        global_df.drop(columns=['location_sum', 'source_sum', 'hashtags_sum', 'text', 'user_description', 'words'], inplace=True)
+
+    global_df.to_csv(f"./data/sentiment/sentiment_analysis_({frequency}).csv")
+    return global_df
+
 
 

@@ -94,18 +94,28 @@ def page_1(market_data):
                 """
         st.markdown(dataset_info)
         st.text("")
+        st.text("")
 
-        num_figures = 4
+        columns_dict = ['Open', 'High', 'Low', 'Close']
         figures = []
-        for i in range(1, num_figures + 1):
-            fig = gaussian_curve(market_data.iloc[:, i])
+
+        for cols in columns_dict:
+            selected_columns = market_data[cols]
+            fig = gaussian_curve(selected_columns)
             figures.append(fig)
 
         col1, col2, col3 = st.columns([1,25,1])
         with col2:
             st.pyplot(figures[0])
+            st.text("")
+            st.text("")
             st.pyplot(figures[1])
+            st.text("")
+            st.text("")
             st.pyplot(figures[2])
+            st.text("")
+            st.text("")
+            st.text("")
             st.pyplot(figures[3])
 
     st.markdown('<div class="subheader">Market_ </div>', unsafe_allow_html=True)
