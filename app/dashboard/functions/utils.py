@@ -1,6 +1,5 @@
 from collections import Counter
 import pandas as pd
-import re
 
 def load_csv(file_path):
     df = pd.read_csv(file_path)
@@ -35,7 +34,7 @@ def resample(df, frequency):
         display_data["Weighted_Price"] = display_data["Volume_(Currency)"] / display_data["Volume_(BTC)"]
     else:
         display_data = df
-
+    print(display_data)
     return display_data
 
 def word_chaining_and_count(text_count):
@@ -46,4 +45,16 @@ def word_chaining_and_count(text_count):
     sorted_word_counts_str = ' '.join([f'[{word}, {count}]' for word, count in sorted_word_counts])
     return sorted_word_counts_str
 
+def calculate_statistics(df):
+    results = {
+        'MIN': df.min(),
+        'MEAN': df.mean(),
+        'MEDIAN': df.median(),
+        'STD': df.std(),
+        'MAX': df.max(),
+    }
+    statistics = pd.DataFrame(results)
+    statistics = statistics.T
+    statistics = statistics.drop('Timestamp', axis=1)
+    return statistics
 

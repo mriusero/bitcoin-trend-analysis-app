@@ -1,17 +1,17 @@
-import pandas as pd
-import re
 import numpy as np
 import plotly.graph_objects as go
 from matplotlib import pyplot as plt
 from scipy.stats import norm
 
 ##COLOR##
-blue_on_graph = '#1F77B4'
+blue_on_graph = '#20edfa'
+green_on_graph = '#09AB3B'
 red_on_graph = '#B40426'
 background = '#262730'
-twitter='#1D9BF0'
-bitcoin='#F79621'
-primaryColor="#5d38e8"
+blue_curve= '#3526da'
+bitcoin='#ED6F13'
+greenmoney="#7DEFA1"
+greenlemon="#1bef22"
 
 def gaussian_curve(column_data):
     mu, sigma = norm.fit(column_data)
@@ -19,17 +19,18 @@ def gaussian_curve(column_data):
     x = np.linspace(xmin, xmax, 100)
     p = norm.pdf(x, mu, sigma)
 
-    fig, ax = plt.subplots()
-    ax.plot(x, p, 'k', linewidth=2, color=red_on_graph)
-    ax.hist(column_data, bins=30, density=True, alpha=0.5, color=primaryColor)
+    fig, ax = plt.subplots(figsize=(6, 4))
+    ax.plot(x, p, linewidth=4, color=green_on_graph, label='Gaussian Curve')
+    ax.hist(column_data, bins=30, density=True, alpha=0.5, color=blue_on_graph)
     ax.set_title(f'Column {column_data.name}', color="white")
-    ax.set_xlabel('Valeurs', color="white")
-    ax.set_ylabel('Fréquence', color="white")
+
+    ax.yaxis.set_label_position('right')
+    ax.yaxis.tick_right()
 
     ax.set_facecolor('none')
     fig.patch.set_facecolor('none')
 
-    for spine in ax.spines.values():                                       #Définir la couleur du cadre (spines)
+    for spine in ax.spines.values():
         spine.set_edgecolor('none')
 
     plt.setp(ax.get_xticklabels(), color="white", size='12')
@@ -37,69 +38,64 @@ def gaussian_curve(column_data):
 
     return fig
 
-def volume_curve(df):
-    df.reset_index(inplace=True)
+def combined_volume_curve(df):
+    df['date'] = df.index.strftime('%y-%m-%d')
+    fig, ax1 = plt.subplots(figsize=(12, 8))
 
-    fig_btc, ax1 = plt.subplots(figsize=(10, 6))    # Création de la figure pour le volume en BTC
-    ax1.plot(df['Timestamp'], df['Volume_(BTC)'], color='green')    # Tracer la courbe pour le volume en BTC
-    ax1.set_xlabel('Temps')
-    ax1.set_ylabel('Volume (BTC)', color='green')
-    ax1.grid(True)
-
-    ax1_twin = ax1.twinx()      # Ajouter une deuxième courbe pour le prix pondéré (Weighted_Price)
-    ax1_twin.plot(df['Timestamp'], df['Weighted_Price'], color='red')
-    ax1_twin.set_ylabel('Prix pondéré', color='red')
-
+    ax1.bar(df['date'], df['Volume_(BTC)'], color=blue_on_graph, label='Volume (BTC)', alpha=0.6) # Etape 1: Histogramme pour le volume en BTC
+    ax1.set_xlabel('Time', color='white', size=15)
+    ax1.set_ylabel('Volume (BTC)', color='white', size=15)
+    ax1.tick_params(axis='y', labelcolor=blue_on_graph)
+    ax1.xaxis.set_tick_params(color='none')
+    ax1.yaxis.set_tick_params(color='white')
     ax1.set_facecolor('none')
-    fig_btc.patch.set_facecolor('none')
 
-    for spine in ax1.spines.values():  # Définir la couleur du cadre (spines)
-        spine.set_edgecolor('none')
-    for spine in ax1_twin.spines.values():  # Définir la couleur du cadre (spines)
-        spine.set_edgecolor('none')
-
-    plt.setp(ax1.get_xticklabels(), color="white", size='12')
-    plt.setp(ax1.get_yticklabels(), color="white", size='12')
-    plt.setp(ax1_twin.get_xticklabels(), color="white", size='12')
-    plt.setp(ax1_twin.get_yticklabels(), color="white", size='12')
-
-    fig_currency, ax2 = plt.subplots(figsize=(10, 6))   # Création de la figure pour le volume en Currency
-    ax2.plot(df['Timestamp'], df['Volume_(Currency)'], color='blue')    # Tracer la courbe pour le volume en Currency
-    ax2.set_xlabel('Temps')
-    ax2.set_ylabel('Volume (Currency)', color='blue')
-    ax2.grid(True)
-
-    ax2_twin = ax2.twinx()      # Ajouter une deuxième courbe pour le prix pondéré (Weighted_Price)
-    ax2_twin.plot(df['Timestamp'], df['Weighted_Price'], color='red')
-    ax2_twin.set_ylabel('Prix pondéré', color='red')
-
+    ax2 = ax1.twinx()       # Etape 2: Histogramme pour le volume en Currency
+    ax2.bar(df['date'], df['Volume_(Currency)'], color=red_on_graph, label='Volume (Currency)', alpha=0.6, width=0.4)
+    ax2.set_ylabel('Volume (Currency)', color='white', size=15)
+    ax2.tick_params(axis='y', labelcolor='white')
+    ax2.yaxis.set_tick_params(color='white')
     ax2.set_facecolor('none')
-    ax2_twin.set_facecolor('none')
-    fig_currency.patch.set_facecolor('none')
-    for spine in ax2.spines.values():  # Définir la couleur du cadre (spines)
-        spine.set_edgecolor('none')
-    for spine in ax2_twin.spines.values():  # Définir la couleur du cadre (spines)
-        spine.set_edgecolor('none')
-    plt.setp(ax2.get_xticklabels(), color="white", size='12')
-    plt.setp(ax2.get_yticklabels(), color="white", size='12')
-    plt.setp(ax2_twin.get_xticklabels(), color="white", size='12')
-    plt.setp(ax2_twin.get_yticklabels(), color="white", size='12')
-    grid_params = {
+
+    ax3 = ax1.twinx()   # Etape 3: Courbe pour le prix pondéré
+    ax3.plot(df['date'], df['Weighted_Price'], color=green_on_graph, label='Weighted Price',  linewidth=2)
+    ax3.spines['right'].set_position(('outward', 60))           # Décaler l'axe pour le différencier
+    ax3.set_ylabel('Weighted_price', color='white', size=15)
+    ax3.tick_params(axis='y', labelcolor=green_on_graph)
+    ax3.yaxis.set_tick_params(color=green_on_graph)
+    ax3.set_facecolor('none')
+
+    for ax in [ax1, ax2, ax3]:      # Configuration des ticks et des spines pour tous les axes
+        ax.tick_params(axis='x', which='both', labelbottom=False)
+        ax.spines['left'].set_edgecolor("#4b4b4b")
+        ax.spines['right'].set_edgecolor("#4b4b4b")
+        ax.spines['top'].set_edgecolor("none")
+        ax.spines['bottom'].set_edgecolor("none")
+
+    ax3.spines['right'].set_edgecolor(green_on_graph)
+
+    fig.patch.set_facecolor('none')
+
+    for ax in [ax1, ax2, ax3]:      # Configuration des labels de ticks
+        plt.setp(ax.get_xticklabels(), color="white", size='14')
+        plt.setp(ax.get_yticklabels(), color="white", size='14')
+
+    grid_params = {          # Configuration de la grille
         "color": 'none',
         "linestyle": '-',
         "linewidth": 0.1
     }
     ax1.grid(**grid_params)
-    ax1_twin.grid(**grid_params)
     ax2.grid(**grid_params)
-    ax2_twin.grid(**grid_params)
+    ax3.grid(**grid_params)
 
+    legend = fig.legend(loc='upper left', bbox_to_anchor=(0.75, 1.1), bbox_transform=ax1.transAxes)
+    legend.set_frame_on(True)
+    legend.get_frame().set_facecolor('none')
+    for text in legend.get_texts():
+        text.set_color('white')
 
-
-    return fig_btc, fig_currency
-
-
-
+    return fig
 
 
 def create_candlestick_chart1(df):
@@ -115,14 +111,21 @@ def create_candlestick_chart1(df):
                              y=df['Weighted_Price'],
                              mode="lines",
                              name="Weighted_Price",
-                             line = dict(color=primaryColor)
+                             line = dict(color=blue_curve)
                              )
                   )
     fig.update_layout(title="",
                       xaxis_title="Date",
                       yaxis_title="Price",
-                      xaxis_rangeslider_visible=False)
-
+                      xaxis_rangeslider_visible=False,
+                      margin = dict(l=50, r=50, t=20, b=50),
+                      xaxis = dict(
+                          tickfont=dict(size=15)  # Ajustez la taille de la police pour l'axe x
+                      ),
+                      yaxis = dict(
+                          tickfont=dict(size=15)  # Ajustez la taille de la police pour l'axe y
+                      )
+    )
     return fig
 
 def create_candlestick_chart2(df):
@@ -139,7 +142,7 @@ def create_candlestick_chart2(df):
                              y=df['prediction'],
                              mode='lines',
                              name='Prediction',
-                             line=dict(color='blue', width=2)
+                             line=dict(color=blue_curve, width=2)
                              )
     )
 
@@ -152,25 +155,3 @@ def create_candlestick_chart2(df):
     )
     return fig
 
-def create_circular_graph(df):
-    # Trier le DataFrame par ordre décroissant des comptes
-    df_sorted = df.sort_values(by='count', ascending=False)
-
-    # Calculer les pourcentages des comptes
-    df_sorted['percentage'] = df_sorted['count'] / df_sorted['count'].sum() * 100
-
-    # Calculer les pourcentages cumulés
-    df_sorted['cumulative_percentage'] = df_sorted['percentage'].cumsum()
-
-    # Filtrer les mots pour obtenir ceux qui représentent les 20% les plus utilisés
-    df_filtered = df_sorted[df_sorted['cumulative_percentage'] <= 20]
-
-    # Tracer le graphique circulaire
-    fig, ax = plt.subplots()
-    ax.pie(df_filtered['percentage'], labels=df_filtered['word'], autopct='%1.1f%%', startangle=140)
-    ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-
-    plt.title('Graphique Circulaire des 20% des Mots les Plus Utilisés')
-    plt.tight_layout()
-
-    return fig
