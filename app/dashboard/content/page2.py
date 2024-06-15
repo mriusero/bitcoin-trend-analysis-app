@@ -1,5 +1,5 @@
 import streamlit as st
-from ..functions import preprocessing, aggregate_sentiment, shape_wordcloud, load_csv, calculate_statistics, seconds_to_duration
+from ..functions import preprocessing, aggregate_sentiment, calculate_sentiment, shape_wordcloud, load_csv, calculate_statistics, seconds_to_duration
 from ..components import gaussian_curve
 def page_2(tweet_data):
     st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)
@@ -116,16 +116,17 @@ def page_2(tweet_data):
         st.text(description)
         st.text("")
 
-        #daily_sentiment = aggregate_sentiment(preprocessed_df, frequency)
-        daily_sentiment = load_csv(f"./data/sentiment/sentiment_analysis_({frequency}).csv")
-        daily_sentiment.drop(daily_sentiment.columns[0], axis=1, inplace=True)
-        st.dataframe(daily_sentiment)
+        #calculate_sentiment(preprocessed_df)
+        sentiment_data = load_csv(f"./data/sentiment/sentiment_analysis.csv")
+        sentiment_data.drop(sentiment_data.columns[0], axis=1, inplace=True)
+        period_sentiment = aggregate_sentiment(sentiment_data, frequency)
+        st.dataframe(period_sentiment)
 
         st.markdown('<div class="subheader">Statistics_ </div>', unsafe_allow_html=True)
         st.text("")
         columns_stats = ['text_sentiment_mean', 'user_sentiment_mean', 'user_since_mean', 'tweet_sum', 'followers_sum',
                          'friends_sum', 'favorites_sum']
-        statistics = calculate_statistics(daily_sentiment[columns_stats])
+        statistics = calculate_statistics(period_sentiment[columns_stats])
         statistics['user_since_mean'] = statistics['user_since_mean'].apply(seconds_to_duration)
         st.dataframe(statistics)
 
@@ -136,27 +137,23 @@ def page_2(tweet_data):
         with colA:
             theme = "metawords"
             st.text("#Metawords_ (user_description + text)")
-            df_sentiment = load_csv(f"./data/sentiment/sentiment_analysis_({frequency}).csv")
-            wordcloud = shape_wordcloud(df_sentiment, theme)
+            wordcloud = shape_wordcloud(period_sentiment, theme)
             st.image(wordcloud)
 
             theme = "metalocation"
             st.text("#Metalocation_ (user_location)")
-            df_sentiment = load_csv(f"./data/sentiment/sentiment_analysis_({frequency}).csv")
-            wordcloud = shape_wordcloud(df_sentiment, theme)
+            wordcloud = shape_wordcloud(period_sentiment, theme)
             st.image(wordcloud)
 
         with colB:
             theme = "metahashtags"
             st.text("#Metahashtags_ (hashtags)")
-            df_sentiment = load_csv(f"./data/sentiment/sentiment_analysis_({frequency}).csv")
-            wordcloud = shape_wordcloud(df_sentiment, theme)
+            wordcloud = shape_wordcloud(period_sentiment, theme)
             st.image(wordcloud)
 
             theme = "metasource"
             st.text("#Metasource_ (source)")
-            df_sentiment = load_csv(f"./data/sentiment/sentiment_analysis_({frequency}).csv")
-            wordcloud = shape_wordcloud(df_sentiment, theme)
+            wordcloud = shape_wordcloud(period_sentiment, theme)
             st.image(wordcloud)
 
     with col2:
@@ -164,7 +161,7 @@ def page_2(tweet_data):
         figures = []
 
         for cols in columns_dict:
-            selected_columns = daily_sentiment[cols]
+            selected_columns = period_sentiment[cols]
             fig = gaussian_curve(selected_columns)
             figures.append(fig)
 
