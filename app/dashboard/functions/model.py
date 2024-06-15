@@ -1,32 +1,31 @@
 import pandas as pd
 import streamlit as st
 
-from sklearn.model_selection import train_test_split, learning_curve
+from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 
 from .utils import load_csv, resample
+from .sentiment_analysis import aggregate_sentiment
 from ..components import create_candlestick_chart2
 from .performance import visualise_performance
 
 def prepare_data(market_data, frequency):
     df_A = resample(market_data, frequency)
     df_A.reset_index(drop=False, inplace=True)
-    #date_limit = pd.Timestamp('2021-03-12 23:59:14+00:00')
-    #df_A = df_A[df_A['Timestamp'] < date_limit]
-
-    df_A['av_price'] = round(df_A[['Open', 'High', 'Low', 'Close']].mean(axis=1),2)
     df_A.rename(columns={'Timestamp': 'date'}, inplace=True)
 
-    df_B = load_csv(f"./data/sentiment/sentiment_analysis_({frequency}).csv")
-    del df_B["Unnamed: 0"]
+    df_C = load_csv(f"./data/sentiment/sentiment_analysis.csv")
+    df_C.drop(df_C.columns[0], axis=1, inplace=True)
+    df_B = aggregate_sentiment(df_C, frequency)
+
     df = pd.merge(df_A, df_B, on='date', how='left')
     df = df.fillna(0)
+
     return df
 
 
-def predict(market_data, frequency, test_size, X_selected, Y_selected):
-    df = prepare_data(market_data, frequency)
+def predict(df, test_size, X_selected, Y_selected):
 
     X = df[X_selected]
     y = df[Y_selected].squeeze()

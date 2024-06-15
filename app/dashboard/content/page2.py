@@ -1,5 +1,6 @@
 import streamlit as st
-
+from ..functions import preprocessing, aggregate_sentiment, calculate_sentiment, shape_wordcloud, load_csv, calculate_statistics, seconds_to_duration
+from ..components import gaussian_curve
 def page_2(tweet_data):
     st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)
     st.markdown('<div class="header">#2 BTC Twitter History [dataset B]</div>', unsafe_allow_html=True)
@@ -8,31 +9,38 @@ def page_2(tweet_data):
     col1, col2 = st.columns(2)
     with col1:
         st.text("")
-        description = """
-        
-        
-        
+        description = """       
         Start date (UTC) | 2021-02-05 10:52:04+00:00
         End date   (UTC) | 2021-03-31 00:00:00+00:00
         Period     (UTC) | 53 days 13:07:56    
                     
-        [user_name]         -->     le nom de l'utilisateur.
-        [user_location]     -->     la localisation définie par l'utilisateur.
-        [user_description]  -->     la description du profil de l'utilisateur.
-        [user_created]      -->     date et heure de création du compte.
-        [user_followers]    -->     le nombre de followers du compte.
-        [user_friends]      -->     le nombre d'amis du compte.
-        [user_favourites]   -->     le nombre de favoris du compte.
-        [user_verified]     -->     (booléen) true indique que l'utilisateur a un compte vérifié.
-        [date]              -->     date et heure UTC de l'édition du tweet.
-        [text]              -->     le tweet.
-        [hashtags]          -->     les hashtags postés dans le tweet.
-        [source]            -->     moyen d'édition du tweet.
-        [is_retweet]        -->     (booléen) true indique qu'il s'agit d'un retweet.'   
-                         """
+        * Type "string" (5)   
+           - user_name           : The name of the user, as they’ve defined it.
+           - user_location       : The user-defined location for this account’s profile.
+           - user_description    : The user-defined UTF-8 string describing their account.
+           - text                : The actual UTF-8 text of the Tweet
+           - hashtags            : All the other hashtags posted in the tweet along with #Bitcoin & #btc
 
+        * Type "numerical" (3)
+           - user_followers      : The number of followers an account currently has.
+           - user_friends        : The number of friends an account currently has.
+           - user_favourites     : The number of favorites an account currently has.
+        
+        * Type "datetime" (2) 
+           - user_created        : Time and date, when the account was created.
+           - date                : UTC time and date when the Tweet was created.
+        
+        * Type "dichotomous" (2)
+           - user_verified       : When true, indicates that the user has a verified account
+           - is_retweet          : Indicates whether this Tweet has been Retweeted by the authenticating user
+
+        * Type "categorical" (1)        
+           - source              : Utility used to post the Tweet, Tweets from the Twitter website have a source value - web 
+                         """
         st.text(description)
     with col2:
+        st.text("")
+        st.text("")
         dataset_info = """
         *             ------ Bitcoin tweets historical DataFrame ------
             
@@ -58,55 +66,128 @@ def page_2(tweet_data):
               memory usage: 5.2+ MB
         """
         st.markdown(dataset_info)
-
-
-
-
-
+    st.markdown('<div class="subheader">Dataframe_ </div>', unsafe_allow_html=True)
+    st.text("")
     st.dataframe(tweet_data)
 
-    st.markdown('''
-        ### Hypotheses
+    st.markdown('<div class="subheader">Preprocessing_ </div>', unsafe_allow_html=True)
+    st.text("")
+    description = """       
+            (1) Preprocessing on textual data ('source', 'user_location', 'user_description', 'text', 'hashtags'):
+                - Hashtags conversion
+                - Text normalization
+                - Regex patterns filtering (emojis, punctuation, url, digits, mentions, worlds_alphabets, symbols...)
+                - Stopwords suppression (EN + FR) 
+                - Stemming
+                
+            (2) Merge with non-textual data ('user_created', 'user_followers', 'user_friends', 'user_favourites', 'user_verified'):
+                - Account experience calculation --> 'user_since'
+                  """
+    st.text(description)
+    st.text("")
+    #preprocessed_df = preprocessing(tweet_data)
+    preprocessed_df = load_csv(f"./data/sentiment/preprocessed_data.csv")
+    preprocessed_df.drop(preprocessed_df.columns[0], axis=1, inplace=True)
+    st.dataframe(preprocessed_df)
 
-        1. **Analyse de Sentiment sur les Textes des Tweets**
+    st.markdown('<div class="subheader">Sentiment analysis_ </div>', unsafe_allow_html=True)
+    col1, col2 = st.columns([6,2])
+    with col1:
+        frequency = st.selectbox("Select a frequency", ['60min', '6H', '12H', 'Daily', 'Weekly'])
+        st.text("")
+        description = """       
+                    (1) Sentiment score calculation per period with VaderSentiment (SentimentIntensityAnalyzer): 
+                        - user_description --> user_sentiment_mean
+                        - text  --> text_sentiment_mean
 
-           * **Text** : Utilisez des outils de traitement du langage naturel (NLP) pour déterminer le sentiment (positif, négatif, neutre) des tweets.
-           * **Hashtags** : Les hashtags peuvent fournir un contexte supplémentaire au contenu des tweets et influencer le sentiment global. Par exemple, un hashtag comme #Love peut indiquer un sentiment positif.
+                    (2) Aggregation of associated values :
+                        - user_since     -->  user_since_mean
+                        - user_followers -->  followers_sum
+                        - user_friends   -->  friends_sum
+                        - user_favorites -->  favorites_sum
+                        - user_verified  -->  verified_sum
 
-        2. **Analyse des Utilisateurs**
+                    (3) Metadata collection with occurence counting : 
+                        - text & user_description -> metawords
+                        - hashtags --> metahashtags
+                        - location --> metalocation
+                        - source   --> metasource
+                          """
+        st.text(description)
+        st.text("")
 
-           * **user_name et user_verified** : Les utilisateurs vérifiés peuvent avoir une influence différente par rapport aux utilisateurs non-vérifiés.
-           * **user_location** : Effectuez une analyse géographique pour voir si les sentiments varient selon les régions ou les pays.
-           * **user_followers et user_friends** : Ces métriques peuvent indiquer l'influence d'un utilisateur. Analysez si les utilisateurs avec plus de followers expriment des sentiments différents.
-           * **user_favourites** : Le nombre de tweets favoris peut également influencer les sentiments, car les utilisateurs ayant plus d'interactions pourraient avoir des tendances spécifiques.
+        #calculate_sentiment(preprocessed_df)
+        sentiment_data = load_csv(f"./data/sentiment/sentiment_analysis.csv")
+        sentiment_data.drop(sentiment_data.columns[0], axis=1, inplace=True)
+        period_sentiment = aggregate_sentiment(sentiment_data, frequency)
+        st.dataframe(period_sentiment)
 
-        3. **Analyse Temporelle**
+        st.markdown('<div class="subheader">Statistics_ </div>', unsafe_allow_html=True)
+        st.text("")
+        columns_stats = ['text_sentiment_mean', 'user_sentiment_mean', 'user_since_mean', 'tweet_sum', 'followers_sum',
+                         'friends_sum', 'favorites_sum']
+        statistics = calculate_statistics(period_sentiment[columns_stats])
+        statistics['user_since_mean'] = statistics['user_since_mean'].apply(seconds_to_duration)
+        st.dataframe(statistics)
 
-           * **date** : Analyse des tendances, des pics ou des baisses dans les sentiments à des périodes spécifiques.
+        st.markdown('<div class="subheader">Wordcloud_ </div>', unsafe_allow_html=True)
+        st.text("")
+        colA, colB = st.columns(2)
 
-        4. **Source des Tweets**
+        with colA:
+            theme = "metawords"
+            st.text("#Metawords_ (user_description + text)")
+            wordcloud = shape_wordcloud(period_sentiment, theme)
+            st.image(wordcloud)
 
-           * **source** : Différents clients Twitter (par exemple, Twitter Web App, iPhone, Android) peuvent avoir des utilisateurs avec des comportements différents. Analysez si les sentiments varient en fonction de la source du tweet.
+            theme = "metalocation"
+            st.text("#Metalocation_ (user_location)")
+            wordcloud = shape_wordcloud(period_sentiment, theme)
+            st.image(wordcloud)
 
-        5. **Interactivité et Viralité**
+        with colB:
+            theme = "metahashtags"
+            st.text("#Metahashtags_ (hashtags)")
+            wordcloud = shape_wordcloud(period_sentiment, theme)
+            st.image(wordcloud)
 
-           * **is_retweet** : Les retweets peuvent avoir des sentiments différents des tweets originaux. Les retweets peuvent souvent amplifier les sentiments présents dans les tweets originaux.
-           * Analysez le taux de retweets pour comprendre comment les sentiments se propagent et s'amplifient sur la plateforme.
+            theme = "metasource"
+            st.text("#Metasource_ (source)")
+            wordcloud = shape_wordcloud(period_sentiment, theme)
+            st.image(wordcloud)
 
-        6. **Contenu des Profils Utilisateurs**
+    with col2:
+        columns_dict = ['user_sentiment_mean', 'text_sentiment_mean', 'tweet_sum', 'followers_sum', 'friends_sum','favorites_sum', 'verified_sum']
+        figures = []
 
-           * **user_description** : Les descriptions des utilisateurs peuvent fournir un contexte sur leurs intérêts et leur personnalité, ce qui peut influencer le ton et le sentiment de leurs tweets.
+        for cols in columns_dict:
+            selected_columns = period_sentiment[cols]
+            fig = gaussian_curve(selected_columns)
+            figures.append(fig)
 
-        ### Méthodologies
+        st.text("")
+        st.pyplot(figures[0])
+        st.text("")
+        st.pyplot(figures[1])
+        st.pyplot(figures[2])
+        st.pyplot(figures[3])
+        st.pyplot(figures[4])
+        st.pyplot(figures[5])
+        st.pyplot(figures[6])
 
-        1. **Traitement du Langage Naturel (NLP)** : Utilisez des bibliothèques comme NLTK, spaCy, ou transformers (BERT, GPT) pour analyser le sentiment des textes.
-        2. **Analyse de Clustering** : Groupez les utilisateurs ou les tweets par similitudes de sentiments ou de comportements.
-        3. **Visualisation des Données** : Utilisez des outils de visualisation (par ex., Matplotlib, Seaborn) pour créer des graphes temporels des sentiments, des cartes de chaleur géographiques, etc.
 
-        ### Insights Potentiels
 
-        * **Sentiments par Région** : Identifier les régions où les sentiments sont majoritairement positifs ou négatifs.
-        * **Impact des Événements** : Observer comment certains événements (par ex., annonces politiques, événements sportifs) influencent le sentiment global sur Twitter.
-        * **Profil des Utilisateurs** : Découvrir quels types d'utilisateurs (par ex., influenceurs, nouveaux utilisateurs) sont plus susceptibles d'exprimer des sentiments positifs ou négatifs.
-        * **Évolution des Sentiments** : Déterminer comment les sentiments changent au fil du temps et quelles sont les périodes critiques d'évolution.
-        ''', unsafe_allow_html=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+

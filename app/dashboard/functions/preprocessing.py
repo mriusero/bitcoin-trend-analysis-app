@@ -90,7 +90,7 @@ def preprocessing(tweet_data):
     message_text = st.text("Preprocessing ... 0.00%")
 
     tweet_data.loc[:, 'hashtags'] = tweet_data['hashtags'].apply(convert_hashtags)
-    text_columns = ['date','source', 'user_location', 'user_description', 'text']
+    text_columns = ['date','source', 'user_location', 'user_description', 'text', 'hashtags']
     df = tweet_data.loc[:, text_columns].copy()
     df.set_index('date', inplace=True)
 
@@ -107,10 +107,15 @@ def preprocessing(tweet_data):
 
     message_text.text("Preprocessing terminé ! 100.00%")
 
-    df_B_columns = ['date', 'user_followers', 'user_verified']
+    df_B_columns = ['date', 'user_created', 'user_followers', 'user_friends', 'user_favourites', 'user_verified']
     df_B = tweet_data.loc[:, df_B_columns].copy()
+    df_B['user_created'] = pd.to_datetime(df_B["user_created"], utc=True)
+    df_B['user_since']= df_B['date'] - df_B['user_created']
 
-    df_A_columns = ['date', 'source', 'user_location', 'user_description', 'text']
+    df_A_columns = ['date', 'source', 'user_location', 'user_description', 'text', 'hashtags']
     df_A = df.loc[:, df_A_columns].copy()
 
-    return pd.merge(df_A, df_B, on='date')
+    preprocessed_data = pd.merge(df_A, df_B, on='date')
+    preprocessed_data.to_csv("./data/sentiment/preprocessed_data.csv")
+
+    return preprocessed_data
