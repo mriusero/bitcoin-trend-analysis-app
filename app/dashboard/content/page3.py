@@ -1,5 +1,5 @@
 import streamlit as st
-from ..functions import prepare_data, predict, duration_to_seconds
+from ..functions import prepare_data, predict, duration_to_seconds, load_csv, aggregate_sentiment
 
 
 def page_3(market_data, tweet_data):
