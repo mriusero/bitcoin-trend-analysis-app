@@ -65,9 +65,19 @@ def calculate_statistics(df):
     return statistics
 
 def duration_to_seconds(duration_str):
-    days, time_str = duration_str.split(' days ')
-    hours, minutes, seconds = map(int, time_str.split(':'))
-    return int(days) * 86400 + hours * 3600 + minutes * 60 + seconds
+    if isinstance(duration_str, (int, float)):
+        return float(duration_str)
+
+    if isinstance(duration_str, str):
+        try:
+            days, time = duration_str.split(" days ")
+            hours, minutes, seconds = map(int, time.split(":"))
+            duration = timedelta(days=int(days), hours=hours, minutes=minutes, seconds=seconds)
+            return duration.total_seconds() / (24 * 3600)
+        except ValueError:
+            return None
+    else:
+        return None
 
 def seconds_to_duration(seconds):
     duration = timedelta(seconds=seconds)
