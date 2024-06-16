@@ -1,22 +1,42 @@
 import streamlit as st
 def page_intro():
     st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)
-    st.markdown('<div class="header"># Introduction_</div>', unsafe_allow_html=True)
+    context = """
+# #Context_      
 
-    st.markdown("")
-    introduction = """
+    Bitcoin ₿ is a cryptocurrency invented in 2008 by an unknown person or group of people using the name Satoshi Nakamoto. Its use began 
+    in 2009 when its implementation was released as open-source software.
+    
+    Bitcoin is a decentralized digital currency, without a central bank or single administrator, that can be sent from user to user on the 
+    peer-to-peer bitcoin network without the need for intermediaries. Transactions are verified by network nodes through cryptography and 
+    recorded in a public distributed ledger called a blockchain. 
+    
+    On November 30, 2020, Bitcoin reached a new all-time high of $19,860, surpassing the previous record from December 2017. On January 19, 
+    2021, Elon Musk added #Bitcoin to his Twitter profile and tweeted, "In retrospect, it was inevitable" causing the price to rise by 
+    nearly $5,000 in an hour to reach $37,299.
+    """
+    st.markdown(context)
+    project = """
+# #Project_
 
-    Bitcoin (₿) est une cryptomonnaie inventée en 2008 par une personne ou un groupe de personnes inconnues,
-    utilisant le nom de Satoshi Nakamoto et dont l'utilisation à démarré en 2009 lorsque son implémentation 
-    a été publiée en tant que logiciel libre.
-
-    Bitcoin est une monnaie numérique décentralisée, sans banque centrale ni administrateur unique, qui peut être
-    envoyée d'utilisateur à utilisateur sur le réseau bitcoin peer-to-peer sans besoin d'intermédiaires.  
-    Les transactions sont vérifiées par les nœuds du réseau grâce à la cryptographie et enregistrées dans un registre
-    distribué public, appelé blockchain. 
-
-    Le 30 novembre 2020, le bitcoin a atteint un nouveau record historique de 19 860 $, dépassant le précédent record de décembre 2017.
-    Le 19 janvier 2021, Elon Musk a placé #Bitcoin dans son profil Twitter en tweetant "Avec le recul, c'était inévitable", 
-    ce qui a provoqué une hausse du prix de près de 5000 $ en une heure pour atteindre 37 299 $.
-        """
-    st.text(introduction)
+    This project is carry out in Sorbonne Data Analytics learning context with for target data management, data vizualisation & text mining.
+    
+      (1) The first step is the Data Management phase, carried out on jupyter_notebook with Pandas : 
+      
+              - Analysis and cleaning of the first dataset : Bitcoin Market History 
+              - Analysis and cleaning of the second dataset : Bitcoin Twitter History
+              - Cross time period identification and dataframe export for analysis
+              
+      (2) The second step is the Data Visualisation phase, carried out on both dataframes :
+      
+              - Preprocessing with nltk (SnowballStemmer, Stopwords) 
+              - Adding value through new variables creation (Sentiment analysis with VaderSentiment, Times series aggregation, Wordcloud ...)             
+              - Statistics calculation and trends visualisation with Numpy, Scipy, Matplotlib 
+              
+      (3) Analytics study of correlation between 'Bitcoin Market History' & 'Bitcoin Twitter History':
+      
+              - Modular Linear Regression Model creation with sklearn and streamlit widgets
+              - Prediction comparison to market with Dash Plotly 
+              - Prediction performance vizualisation with Numpy, Scipy, Matplotlib, Seaborn
+    """
+    st.markdown(project)

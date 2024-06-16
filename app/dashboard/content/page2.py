@@ -1,18 +1,19 @@
 import streamlit as st
-from ..functions import preprocessing, aggregate_sentiment, calculate_sentiment, shape_wordcloud, load_csv, calculate_statistics, seconds_to_duration
+from ..functions import aggregate_sentiment,  shape_wordcloud, load_csv, calculate_statistics, seconds_to_duration, preprocessing, calculate_sentiment
 from ..components import gaussian_curve
 def page_2(tweet_data):
-    st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)
-    st.markdown('<div class="header">#2 BTC Twitter History [dataset B]</div>', unsafe_allow_html=True)
+    st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)                                #TITLE
+    st.markdown('<div class="header">#2 BTC Twitter History [B]</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="subheader">Description_</div>', unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([3,1])
     with col1:
-        st.text("")
-        description = """       
-        Start date (UTC) | 2021-02-05 10:52:04+00:00
-        End date   (UTC) | 2021-03-31 00:00:00+00:00
-        Period     (UTC) | 53 days 13:07:56    
+        st.text("")                             #DESCRIPTION
+        description = """
+### Description_
+      
+    Start date (UTC) | 2021-02-05 10:52:04+00:00
+    End date   (UTC) | 2021-03-31 00:00:00+00:00
+    Period     (UTC) | 53 days 13:07:56    
                     
         * Type "string" (5)   
            - user_name           : The name of the user, as they’ve defined it.
@@ -37,8 +38,11 @@ def page_2(tweet_data):
         * Type "categorical" (1)        
            - source              : Utility used to post the Tweet, Tweets from the Twitter website have a source value - web 
                          """
-        st.text(description)
-    with col2:
+        st.markdown(description)
+
+    with col2:                                  #DATAFRAME INFO
+        st.text("")
+        st.text("")
         st.text("")
         st.text("")
         dataset_info = """
@@ -66,97 +70,141 @@ def page_2(tweet_data):
               memory usage: 5.2+ MB
         """
         st.markdown(dataset_info)
-    st.markdown('<div class="subheader">Dataframe_ </div>', unsafe_allow_html=True)
-    st.text("")
-    st.dataframe(tweet_data)
 
-    st.markdown('<div class="subheader">Preprocessing_ </div>', unsafe_allow_html=True)
-    st.text("")
-    description = """       
-            (1) Preprocessing on textual data ('source', 'user_location', 'user_description', 'text', 'hashtags'):
-                - Hashtags conversion
-                - Text normalization
-                - Regex patterns filtering (emojis, punctuation, url, digits, mentions, worlds_alphabets, symbols...)
-                - Stopwords suppression (EN + FR) 
-                - Stemming
-                
-            (2) Merge with non-textual data ('user_created', 'user_followers', 'user_friends', 'user_favourites', 'user_verified'):
-                - Account experience calculation --> 'user_since'
+                                    #DATAFRAME
+    st.markdown("""                 
+### Dataframe_
+                """)
+    st.dataframe(tweet_data)
+                                            #PREPROCESSING
+    preprocessing_ = """            
+### Preprocessing_
+           
+    (1) Preprocessing on textual data ('source', 'user_location', 'user_description', 'text', 'hashtags'):
+    
+            - Hashtags conversion
+            - Text normalization
+            - Regex patterns filtering (emojis, punctuation, url, digits, mentions, worlds_alphabets, symbols...)
+            - Stopwords suppression (EN + FR) 
+            - Stemming
+        
+    (2) Merge with non-textual data ('user_created', 'user_followers', 'user_friends', 'user_favourites', 'user_verified'):
+    
+            - Account experience calculation --> 'user_since' 
                   """
-    st.text(description)
+    st.markdown(preprocessing_)
     st.text("")
-    #preprocessed_df = preprocessing(tweet_data)
-    preprocessed_df = load_csv(f"./data/sentiment/preprocessed_data.csv")
+                                        #PREPROCESSED DATA
+    preprocessed_data = ("""
+### Preprocessed data_
+    """)
+    st.markdown(preprocessed_data)
+    #preprocessed_df = preprocessing(tweet_data)                                #Run script Vs
+    preprocessed_df = load_csv(f"./data/sentiment/preprocessed_data.csv")       #Load results
     preprocessed_df.drop(preprocessed_df.columns[0], axis=1, inplace=True)
     st.dataframe(preprocessed_df)
 
-    st.markdown('<div class="subheader">Sentiment analysis_ </div>', unsafe_allow_html=True)
     col1, col2 = st.columns([6,2])
     with col1:
-        frequency = st.selectbox("Select a frequency", ['60min', '6H', '12H', 'Daily', 'Weekly'])
-        st.text("")
-        description = """       
-                    (1) Sentiment score calculation per period with VaderSentiment (SentimentIntensityAnalyzer): 
-                        - user_description --> user_sentiment_mean
-                        - text  --> text_sentiment_mean
+                                        #SENTIMENT ANALYSIS
+        sentiment_analysis = ("""
+### Sentiment analysis_
+        """)
+        st.markdown(sentiment_analysis)
+        frequency = st.selectbox("Select a frequency:", ['60min', '6H', '12H', 'Daily', 'Weekly'])
+        sentiment_analysis_description = f"""     
+    freq : '{frequency}'            
 
-                    (2) Aggregation of associated values :
-                        - user_since     -->  user_since_mean
-                        - user_followers -->  followers_sum
-                        - user_friends   -->  friends_sum
-                        - user_favorites -->  favorites_sum
-                        - user_verified  -->  verified_sum
-
-                    (3) Metadata collection with occurence counting : 
-                        - text & user_description -> metawords
-                        - hashtags --> metahashtags
-                        - location --> metalocation
-                        - source   --> metasource
+        (1) Sentiment score calculation per period with VaderSentiment (SentimentIntensityAnalyzer): 
+            
+                - user_description  -->  user_sentiment_mean
+                - text              -->  text_sentiment_mean
+                   
+        (2) Aggregation of associated values :
+            
+                - user_since       -->   user_since_mean
+                - user_followers   -->   followers_sum
+                - user_friends     -->   friends_sum
+                - user_favorites   -->   favorites_sum
+                - user_verified    -->   verified_su
+                
+        (3) Metadata collection with occurence counting : 
+            
+                - text & user_description   -->  metawords
+                - hashtags                  -->  metahashtags
+                - location                  -->  metalocation
+                - source                    -->  metasource
                           """
-        st.text(description)
-        st.text("")
+        st.markdown(sentiment_analysis_description)
 
-        #calculate_sentiment(preprocessed_df)
-        sentiment_data = load_csv(f"./data/sentiment/sentiment_analysis.csv")
+                               #SENTIMENT DATA
+        sentiment_data = ("""       
+### Sentiment data_
+        """)
+        st.markdown(sentiment_data)
+        #calculate_sentiment(preprocessed_df)                                       #Run script Vs
+        sentiment_data = load_csv(f"./data/sentiment/sentiment_analysis.csv")       #Load results
         sentiment_data.drop(sentiment_data.columns[0], axis=1, inplace=True)
         period_sentiment = aggregate_sentiment(sentiment_data, frequency)
         st.dataframe(period_sentiment)
 
-        st.markdown('<div class="subheader">Statistics_ </div>', unsafe_allow_html=True)
-        st.text("")
-        columns_stats = ['text_sentiment_mean', 'user_sentiment_mean', 'user_since_mean', 'tweet_sum', 'followers_sum',
-                         'friends_sum', 'favorites_sum']
+
+                                    #STATISTICS
+        statistics_title = ("""
+### Statistics_       
+        """)
+        st.markdown(statistics_title)
+        columns_stats = [
+            'text_sentiment_mean',
+            'user_sentiment_mean',
+            'user_since_mean',
+            'tweet_sum',
+            'followers_sum',
+            'friends_sum',
+            'favorites_sum'
+        ]
         statistics = calculate_statistics(period_sentiment[columns_stats])
         statistics['user_since_mean'] = statistics['user_since_mean'].apply(seconds_to_duration)
         st.dataframe(statistics)
 
-        st.markdown('<div class="subheader">Wordcloud_ </div>', unsafe_allow_html=True)
-        st.text("")
-        colA, colB = st.columns(2)
 
+                                        #WORDCLOUD
+        wordcloud_title = ("""                                                  
+### Wordcloud_       
+        """)
+        st.markdown(wordcloud_title)
+
+        colA, colB = st.columns(2)
         with colA:
             theme = "metawords"
-            st.text("#Metawords_ (user_description + text)")
+            st.text("#Metawords_ ['user_description', 'text']")
             wordcloud = shape_wordcloud(period_sentiment, theme)
             st.image(wordcloud)
 
             theme = "metalocation"
-            st.text("#Metalocation_ (user_location)")
+            st.text("#Metalocation_ ['user_location']")
             wordcloud = shape_wordcloud(period_sentiment, theme)
             st.image(wordcloud)
 
         with colB:
             theme = "metahashtags"
-            st.text("#Metahashtags_ (hashtags)")
+            st.text("#Metahashtags_ ['hashtags']")
             wordcloud = shape_wordcloud(period_sentiment, theme)
             st.image(wordcloud)
 
             theme = "metasource"
-            st.text("#Metasource_ (source)")
+            st.text("#Metasource_ ['source']")
             wordcloud = shape_wordcloud(period_sentiment, theme)
             st.image(wordcloud)
 
-    with col2:
+
+
+    with col2:                                      #Numerical Dispersion
+        numerical_dispersion_title = ("""
+### Numerical dispersion_
+        """)
+        st.markdown(numerical_dispersion_title)
+
         columns_dict = ['user_sentiment_mean', 'text_sentiment_mean', 'tweet_sum', 'followers_sum', 'friends_sum','favorites_sum', 'verified_sum']
         figures = []
 
@@ -165,14 +213,25 @@ def page_2(tweet_data):
             fig = gaussian_curve(selected_columns)
             figures.append(fig)
 
-        st.text("")
+        st.markdown("")
         st.pyplot(figures[0])
-        st.text("")
+        st.markdown("")
+        st.markdown("")
         st.pyplot(figures[1])
+        st.markdown("")
+        st.markdown("")
         st.pyplot(figures[2])
+        st.markdown("")
+        st.markdown("")
         st.pyplot(figures[3])
+        st.markdown("")
+        st.markdown("")
         st.pyplot(figures[4])
+        st.markdown("")
+        st.markdown("")
         st.pyplot(figures[5])
+        st.markdown("")
+        st.markdown("")
         st.pyplot(figures[6])
 
 
