@@ -155,6 +155,12 @@ def create_candlestick_chart2(df):
                       height=500,
                       #width=100,
                       xaxis_rangeslider_visible=False,
+                      margin=dict(l=50, r=50, t=20, b=50),
+                      xaxis=dict(
+                          tickfont=dict(size=15)  # Ajustez la taille de la police pour l'axe x
+                      ),
+                      yaxis=dict(
+                          tickfont=dict(size=15)  # Ajustez la taille de la police pour l'axe y
+                      ),
     )
     return fig
-

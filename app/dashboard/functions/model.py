@@ -39,13 +39,22 @@ def predict(df, test_size, X_selected, Y_selected):
 
     rmse = mean_squared_error(y_test, predictions, squared=False)
 
+                                    #PREDICTIONS
+    predictions_data = ("""
+### Predictions_
+    """)
+    st.markdown(predictions_data)
     df['prediction'] = model.predict(X)
-
     candlestick_chart = create_candlestick_chart2(df)
     st.plotly_chart(candlestick_chart)
-    st.text(f"RMSE: {rmse}")
-    st.text(f"Coefficients: {model.coef_}")
 
+                                    #COEFICIENTS_
+    coefficients_data = (f"""
+### Performance_
+* RMSE: {rmse}
+* Coefficients: {model.coef_}
+                         """)
+    st.markdown(coefficients_data)
     visualise_performance(model, X, y, y_test, predictions, residuals)
 
 

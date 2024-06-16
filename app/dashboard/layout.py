@@ -7,7 +7,7 @@ def load_css():
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 def app_layout(market_data, tweet_data):
-    from .content import page_intro, page_0, page_1, page_2, page_3, page_conclu
+    from .content import page_intro, page_0, page_1, page_2, page_3
 
     st.set_page_config(
         page_title="SDA 2024 - Marius Ayrault",
@@ -20,7 +20,7 @@ def app_layout(market_data, tweet_data):
     )
 
     load_css()
-    page = st.sidebar.radio("Data Management, Data Viz & Text Mining", ["Introduction", "#0_ Data Management", "#1_ BTC Market History [A]", "#2_ BTC Twitter History [B]", "#3_ Analytics", "Conclusion"])
+    page = st.sidebar.radio("projet-sda-dash-streamlit", ["Introduction", "#0_ Data Management", "#1_ BTC Market History [A]", "#2_ BTC Twitter History [B]", "#3_ Analytics"])
 
     if page == "Introduction":
         page_intro()
@@ -32,8 +32,7 @@ def app_layout(market_data, tweet_data):
         page_2(tweet_data)
     elif page == "#3_ Analytics":
         page_3(market_data, tweet_data)
-    elif page == "Conclusion":
-        page_conclu(market_data, tweet_data)
+
 
 
 
