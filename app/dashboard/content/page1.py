@@ -3,32 +3,34 @@ from ..components import create_candlestick_chart1, gaussian_curve, combined_vol
 from ..functions import resample, calculate_statistics
 
 def page_1(market_data):
-    st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)
-    st.markdown('<div class="header">#1 BTC Market History [dataset A]</div>', unsafe_allow_html=True)
-    st.text("")
+    st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)                            #TITLE
+    st.markdown('<div class="header">#1 BTC Market History [A]</div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns([3,2])
+    with col1:                              #DESCRIPTION
+       description = ("""
+### Description_
 
-    with col1:
-       st.markdown('<div class="subheader">Description_</div>', unsafe_allow_html=True)
-       st.text("")
-       description = """
-                Start date (UTC) | 2021-02-05 10:52:04+00:00
-                End date   (UTC) | 2021-03-31 00:00:00+00:00
-                Period     (UTC) | 53 days 13:07:56   
-                
-                  - timestamp          : start time of time window
-                  - Open               : open price at start time window
-                  - High               : high price within time window              
-                  - Low                : low price within time window              
-                  - Close              : close price at end of time window            
-                  - Volume_(BTC)       : volume of BTC transacted in this window      
-                  - Volume_(Currency)  : Volume of corresponding currency transacted in this window 
-                  - Weighted_Price     : Volume Weighted Average Price [VWAP]
-                     """
-       st.text(description)
-       st.text("")
-       st.markdown('<div class="subheader">Statistics_</div>', unsafe_allow_html=True)
+    Start date (UTC) | 2021-02-05 10:52:04+00:00
+    End date   (UTC) | 2021-03-31 00:00:00+00:00
+    Period     (UTC) | 53 days 13:07:56   
+    
+      - timestamp          : start time of time window
+      - Open               : open price at start time window
+      - High               : high price within time window              
+      - Low                : low price within time window              
+      - Close              : close price at end of time window            
+      - Volume_(BTC)       : volume of BTC transacted in this window      
+      - Volume_(Currency)  : Volume of corresponding currency transacted in this window 
+      - Weighted_Price     : Volume Weighted Average Price [VWAP]
+                     """)
+       st.markdown(description)
+
+                                        # STATISTICS
+       statistics_title = ("""
+### Statistics_
+       """)
+       st.markdown(statistics_title)
        statistics = calculate_statistics(market_data)
        st.markdown(
            """
@@ -57,24 +59,35 @@ def page_1(market_data):
            """,
            unsafe_allow_html=True
        )
-       st.text("")
        st.dataframe(statistics)
 
-       st.markdown('<div class="subheader">Dataframe_ </div>', unsafe_allow_html=True)
-       st.text("")
+                                        #DATAFRAME
+       dataframe_title = ("""
+### DataFrame_
+              """)
+       st.markdown(dataframe_title)
        st.dataframe(market_data)
 
-       st.markdown('<div class="subheader">Frequency_ </div>', unsafe_allow_html=True)
-       frequency = st.selectbox("", ['60min', '6H', '12H', 'Daily', 'Weekly'])
+                                        #FREQUENCY
+       frequency_title = ("""
+### Frequency_
+                     """)
+       st.markdown(frequency_title)
+       frequency = st.selectbox("Select a frequency:", ['60min', '6H', '12H', 'Daily', 'Weekly'])
        display_data = resample(market_data, frequency)
+       st.markdown(f"freq : '{frequency}'")
 
-       st.markdown('<div class="subheader">Trading volumes__ </div>', unsafe_allow_html=True)
-       st.text("")
+                                        #TRADING
+       trading_title = ("""
+### Trading volumes_
+                            """)
+       st.markdown(trading_title)
        fig = combined_volume_curve(display_data)
        st.pyplot(fig)
 
-    with col2:
-        dataset_info = """              
+
+    with col2:                                                                  #DATAFRAME INFO
+        dataframe_info = """              
                 *              ------ Bitcoin market historical DataFrame ------
                       <class 'pandas.core.frame.DataFrame'>
                       Index: 76996 entries, 4780269 to 4857376
@@ -92,20 +105,24 @@ def page_1(market_data):
                       dtypes: datetime64[ns, UTC](1), float64(7)
                       memory usage: 5.3 MB                                 
                 """
-        st.markdown(dataset_info)
+        st.markdown(dataframe_info)
         st.text("")
-        st.text("")
 
-        columns_dict = ['Open', 'High', 'Low', 'Close']
-        figures = []
-
-        for cols in columns_dict:
-            selected_columns = market_data[cols]
-            fig = gaussian_curve(selected_columns)
-            figures.append(fig)
-
-        col1, col2, col3 = st.columns([1,25,1])
+        col1, col2, col3 = st.columns([1,25,1])                 # STOCK PRICE DISTRIBUTION
         with col2:
+            columns_dict = ['Open', 'High', 'Low', 'Close']
+            figures = []
+
+            for cols in columns_dict:
+                selected_columns = market_data[cols]
+                fig = gaussian_curve(selected_columns)
+                figures.append(fig)
+
+            stock_dispersion_title = ("""
+### Stock price distribution_
+            """)
+            st.markdown(stock_dispersion_title)
+            st.text("")
             st.pyplot(figures[0])
             st.text("")
             st.text("")
@@ -118,6 +135,10 @@ def page_1(market_data):
             st.text("")
             st.pyplot(figures[3])
 
-    st.markdown('<div class="subheader">Market_ </div>', unsafe_allow_html=True)
+                        #MARKET
+    market = ("""                           
+### Market_
+    """)
+    st.markdown(market)
     candlestick_chart = create_candlestick_chart1(display_data)
     st.plotly_chart(candlestick_chart)
