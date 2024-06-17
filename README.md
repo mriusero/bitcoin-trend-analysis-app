@@ -87,7 +87,8 @@ This repository contains a Streamlit application designed for visualizing and an
 
 ## Running the Application
 To start the Streamlit application, run the following command from the root directory of the project:
-    
+ 
+    cd app 
     streamlit run app/app.py
 
 ## Project Details
