@@ -69,7 +69,7 @@ This repository contains a Streamlit application designed for visualizing and an
 - pip (Python package installer)
 
 ### Clone the Repository
-    git clone https://github.com/yourusername/projet-sda-dash-streamlit.git
+    git clone https://github.com/mriusero/projet-sda-dash-streamlit.git
     cd projet-sda-dash-streamlit
 
 ## Create and Activate Virtual Environment (Optional but Recommended)
