@@ -1,8 +1,9 @@
 import streamlit as st
 from ..functions import aggregate_sentiment,  shape_wordcloud, load_csv, calculate_statistics, seconds_to_duration, preprocessing, calculate_sentiment
 from ..components import gaussian_curve
+
 def page_2(tweet_data):
-    st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)                                #TITLE
+    st.markdown('<div class="title">Bitcoin Trend Analysis App</div>', unsafe_allow_html=True)                                #TITLE
     st.markdown('<div class="header">#2 BTC Twitter History [B]</div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns([3,1])

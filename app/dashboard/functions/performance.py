@@ -17,7 +17,16 @@ blue_curve= '#3526da'
 bitcoin='#ED6F13'
 greenmoney="#7DEFA1"
 greenlemon="#1bef22"
+
 def plot_correlation_matrix(dataframe): #--------------------------------------------------------------------
+    """
+    Plots a heatmap of the correlation matrix for the given dataframe.
+
+    :param dataframe: pandas.DataFrame
+        The dataset for which the correlation matrix will be calculated.
+    :return: matplotlib.figure.Figure
+        The figure containing the correlation matrix heatmap.
+    """
     heatmap_params = {
         "annot": True,
         "cmap": 'coolwarm',
@@ -47,134 +56,149 @@ def plot_correlation_matrix(dataframe): #---------------------------------------
     plt.setp(cbar.ax.yaxis.get_ticklabels(), color='white', fontsize=10)
 
     return fig_corr
+
 def plot_learning_curve(model, X, y, cv=5): #--------------------------------------------------------------------
-        train_sizes, train_scores, test_scores = learning_curve(model, X, y, cv=cv)      #Apprentissage des courbes
-        train_scores_mean = np.mean(train_scores, axis=1)                       #Moyenne des scores d'apprentissage
-        test_scores_mean = np.mean(test_scores, axis=1)                   #Moyenne des scores de validation croisée
+    """
+    Plots the learning curve for a model, showing the training and validation scores.
 
-        plot_params = {                                                         #Configuration des options de style
-            "xlabel": ("Training Size", {"color": "white", "size": 8}),
-            "ylabel": ("Score", {"color": "white", "size": 8}),
-            "title": ("", {"color": "white", "size": 10})
-        }
-        tick_params = {
-            "color": "white",
-            "size": 7
-        }
+    :param model: sklearn estimator
+        The model to evaluate.
+    :param X: array-like
+        Feature matrix.
+    :param y: array-like
+        Target values.
+    :param cv: int, optional
+        The number of cross-validation folds. Defaults to 5.
+    :return: matplotlib.figure.Figure
+        The figure containing the learning curve plot.
+    """
+    train_sizes, train_scores, test_scores = learning_curve(model, X, y, cv=cv)      #Apprentissage des courbes
+    train_scores_mean = np.mean(train_scores, axis=1)                       #Moyenne des scores d'apprentissage
+    test_scores_mean = np.mean(test_scores, axis=1)                   #Moyenne des scores de validation croisée
 
-        legend_params = {
-            "fontsize": 5
-        }
-        grid_params = {
-            "color": 'white',
-            "linestyle": '-',
-            "linewidth": 0.1
-        }
-        fig_adjust_params = {
-            "left": 0.1,
-            "right": 0.9,
-            "top": 0.9,
-            "bottom": 0.1
-        }
-        fig_learn, ax_learn = plt.subplots(figsize=(3, 2))  #Création de la figure et de l'axe
+    plot_params = {                                                         #Configuration des options de style
+        "xlabel": ("Training Size", {"color": "white", "size": 8}),
+        "ylabel": ("Score", {"color": "white", "size": 8}),
+        "title": ("", {"color": "white", "size": 10})
+    }
+    tick_params = {
+        "color": "white",
+        "size": 7
+    }
+    legend_params = {
+        "fontsize": 5
+    }
+    grid_params = {
+        "color": 'white',
+        "linestyle": '-',
+        "linewidth": 0.1
+    }
+    fig_adjust_params = {
+        "left": 0.1,
+        "right": 0.9,
+        "top": 0.9,
+        "bottom": 0.1
+    }
+    fig_learn, ax_learn = plt.subplots(figsize=(3, 2))  #Création de la figure et de l'axe
 
-        ax_learn.plot(train_sizes, train_scores_mean, label="Training score", color=red_on_graph)  #Tracé de la courbe de score d'apprentissage
-        ax_learn.plot(train_sizes, test_scores_mean, label="Cross-validation score", color=blue_on_graph)  #Tracé de la courbe de score de validation croisée
+    ax_learn.plot(train_sizes, train_scores_mean, label="Training score", color=red_on_graph)  #Tracé de la courbe de score d'apprentissage
+    ax_learn.plot(train_sizes, test_scores_mean, label="Cross-validation score", color=blue_on_graph)  #Tracé de la courbe de score de validation croisée
 
-        ax_learn.set_xlabel(*plot_params["xlabel"])                     #Configuration de l'étiquette de l'axe X
-        ax_learn.set_ylabel(*plot_params["ylabel"])                     #Configuration de l'étiquette de l'axe Y
-        ax_learn.set_title(*plot_params["title"])                                        #Configuration du titre
+    ax_learn.set_xlabel(*plot_params["xlabel"])                     #Configuration de l'étiquette de l'axe X
+    ax_learn.set_ylabel(*plot_params["ylabel"])                     #Configuration de l'étiquette de l'axe Y
+    ax_learn.set_title(*plot_params["title"])                                        #Configuration du titre
 
-        plt.setp(ax_learn.get_xticklabels(), color=tick_params["color"], size=tick_params["size"])  # Configuration des étiquettes de l'axe X
-        plt.setp(ax_learn.get_yticklabels(), color=tick_params["color"], size=tick_params["size"])  # Configuration des étiquettes de l'axe Y
+    plt.setp(ax_learn.get_xticklabels(), color=tick_params["color"], size=tick_params["size"])  # Configuration des étiquettes de l'axe X
+    plt.setp(ax_learn.get_yticklabels(), color=tick_params["color"], size=tick_params["size"])  # Configuration des étiquettes de l'axe Y
 
-        for spine in ax_learn.spines.values():                              #Définir la couleur du cadre (spines)
-            spine.set_edgecolor('none')
-
-        ax_learn.set_facecolor('none')                              #Configuration de la couleur de fond de l'axe
-        ax_learn.legend(**legend_params)                                                     #Ajout de la légende
-        ax_learn.grid(**grid_params)                                                          #Ajout de la grille
-        fig_learn.patch.set_facecolor('none')                   #Configuration de la couleur de fond de la figure
-        fig_learn.subplots_adjust(**fig_adjust_params)                        #Ajustement des marges de la figure
-
-        return fig_learn
-
-def plot_scatter_real_vs_predicted(y_test, predictions):
-    # Create figure and axis
-    fig1, ax1 = plt.subplots(figsize=(8, 8))
-
-    # Scatter plot of predicted vs actual values
-    ax1.scatter(y_test, predictions, color=blue_on_graph)
-
-    # Reference line
-    ax1.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], '-', color=red_on_graph)
-
-    # Title configuration
-    ax1.set_title('', color='white', fontsize=26, loc='left')
-
-    # Set axis background color
-    ax1.patch.set_facecolor('none')
-
-    # X and Y axis labels configuration
-    ax1.set_xlabel('Real values', color='white', fontsize=22)
-    ax1.set_ylabel('Predicted values', color='white', fontsize=22)
-
-    # Grid configuration
-    ax1.grid(True, color='gray', linestyle='--', linewidth=0.5)
-
-    # Spine (frame) color configuration
-    for spine in ax1.spines.values():
+    for spine in ax_learn.spines.values():                              #Définir la couleur du cadre (spines)
         spine.set_edgecolor('none')
 
-    # Tick labels configuration
-    plt.setp(ax1.get_xticklabels(), color="white", size='14')
+    ax_learn.set_facecolor('none')                              #Configuration de la couleur de fond de l'axe
+    ax_learn.legend(**legend_params)                                                     #Ajout de la légende
+    ax_learn.grid(**grid_params)                                                          #Ajout de la grille
+
+    fig_learn.patch.set_facecolor('none')                   #Configuration de la couleur de fond de la figure
+    fig_learn.subplots_adjust(**fig_adjust_params)                        #Ajustement des marges de la figure
+
+    return fig_learn
+
+def plot_scatter_real_vs_predicted(y_test, predictions):
+    """
+    Plots a scatter plot comparing real vs predicted values.
+
+    :param y_test: array-like
+        Actual target values.
+    :param predictions: array-like
+        Predicted target values.
+    :return: matplotlib.figure.Figure
+        The figure containing the scatter plot.
+    """
+    fig1, ax1 = plt.subplots(figsize=(8, 8)) # Create figure and axis
+
+    ax1.scatter(y_test, predictions, color=blue_on_graph) # Scatter plot of predicted vs actual values
+    ax1.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], '-', color=red_on_graph)  # Reference line
+    ax1.set_title('', color='white', fontsize=26, loc='left')  # Title configuration
+
+    ax1.patch.set_facecolor('none')  # Set axis background color
+    ax1.set_xlabel('Real values', color='white', fontsize=22)  # X and Y axis labels configuration
+    ax1.set_ylabel('Predicted values', color='white', fontsize=22)
+    ax1.grid(True, color='gray', linestyle='--', linewidth=0.5)  # Grid configuration
+
+    for spine in ax1.spines.values():  # Spine (frame) color configuration
+        spine.set_edgecolor('none')
+
+    plt.setp(ax1.get_xticklabels(), color="white", size='14')  # Tick labels configuration
     plt.setp(ax1.get_yticklabels(), color="white", size='14')
 
-    # Figure background color and margins adjustment
-    fig1.patch.set_facecolor('none')
+    fig1.patch.set_facecolor('none')  # Figure background color and margins adjustment
     fig1.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1)
 
     return fig1
 
 
 def plot_residuals_vs_predicted(y_test, predictions):
-    # Calculate residuals
-    residuals = y_test - predictions
+    """
+    Plots a scatter plot of residuals (errors) vs predicted values.
 
-    # Create figure and axis
-    fig2, ax2 = plt.subplots(figsize=(4, 2))
+    :param y_test: array-like
+        Actual target values.
+    :param predictions: array-like
+        Predicted target values.
+    :return: matplotlib.figure.Figure
+        The figure containing the residuals vs predicted plot.
+    """
+    residuals = y_test - predictions  # Calculate residuals
+    fig2, ax2 = plt.subplots(figsize=(4, 2))  # Create figure and axis
+    ax2.scatter(predictions, residuals, color=blue_on_graph)  # Scatter plot of residuals vs predicted values
+    ax2.axhline(y=0, color='r', linestyle='-')  # Add horizontal line at y=0
 
-    # Scatter plot of residuals vs predicted values
-    ax2.scatter(predictions, residuals, color=blue_on_graph)
-
-    # Add horizontal line at y=0
-    ax2.axhline(y=0, color='r', linestyle='-')
-
-    # Set labels and title
-    ax2.set_xlabel('Predicted values', color='white', fontsize=10)
+    ax2.set_xlabel('Predicted values', color='white', fontsize=10)  # Set labels and title
     ax2.set_ylabel('Residuals', color='white', fontsize=10)
     ax2.set_title('', color='white')
 
-    # Set background color for the axis
-    ax2.set_facecolor('#262730')
+    ax2.set_facecolor('#262730')  # Set background color for the axis
+    fig2.patch.set_facecolor('none')  # Set facecolor for the figure
 
-    # Set facecolor for the figure
-    fig2.patch.set_facecolor('none')
-
-    # Remove edge color for all spines
-    for spine in ax2.spines.values():
+    for spine in ax2.spines.values():  # Remove edge color for all spines
         spine.set_edgecolor('none')
 
-    # Set color and size for x-axis and y-axis tick labels
-    plt.setp(ax2.get_xticklabels(), color="white", size='12')
+    plt.setp(ax2.get_xticklabels(), color="white", size='12')  # Set color and size for x-axis and y-axis tick labels
     plt.setp(ax2.get_yticklabels(), color="white", size='12')
 
-    # Adjust figure margins
-    fig2.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1)
+    fig2.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1)  # Adjust figure margins
 
     return fig2
 
 def plot_histogram_of_residuals(residuals):
+    """
+    Plots a histogram of residuals to visualize their distribution.
+
+    :param residuals: array-like
+        The residuals/errors (y_test - predictions).
+    :return: matplotlib.figure.Figure
+        The figure containing the histogram plot.
+    """
     fig3, ax3 = plt.subplots(figsize=(7, 5))  # Création de la figure et de l'axe
     ax3.hist(residuals, bins=30, color=green_on_graph, edgecolor='black', alpha=0.7)  # Histogramme des résidus
 
@@ -218,6 +242,12 @@ def plot_histogram_of_residuals(residuals):
     return fig3
 
 def plot_density_curve_of_residuals(residuals):
+    """
+    Plots a density curve (KDE) for residuals to visualize their distribution.
+
+    :param: residuals (array-like): The residuals (errors) from the model's predictions.
+    :return: matplotlib.figure.Figure: The figure containing the density plot.
+    """
     fig4, ax4 = plt.subplots(figsize=(5, 4))  # Création de la figure et de l'axe
     sns.kdeplot(residuals, shade=True, color=green_on_graph, ax=ax4)  # Courbe de densité des résidus
 
@@ -263,6 +293,14 @@ def plot_density_curve_of_residuals(residuals):
 
 
 def plot_qq_diagram(residuals):#------------------------------------------------------------------------------------
+    """
+    Plots a Q-Q diagram to visualize the distribution of residuals against a normal distribution.
+
+    :param residuals: array-like
+        The residuals/errors (y_test - predictions) to be compared with the normal distribution.
+    :return: matplotlib.figure.Figure
+        The figure containing the Q-Q plot.
+    """
     fig5, ax5 = plt.subplots(figsize=(8, 8))
     stats.probplot(residuals, dist="norm", plot=ax5)
     plt.title('', color='white', fontsize=26, loc='left')
@@ -293,7 +331,24 @@ def plot_qq_diagram(residuals):#------------------------------------------------
     return fig5
 
 def visualise_performance(model, X, y, y_test, predictions, residuals):
+    """
+    Visualizes the performance of a machine learning model using various plots.
 
+    :param model: sklearn estimator
+        The model to evaluate.
+    :param X: array-like
+        The feature matrix used to train the model.
+    :param y: array-like
+        The target values used to train the model.
+    :param y_test: array-like
+        The actual target values for the test set.
+    :param predictions: array-like
+        The predicted target values from the model.
+    :param residuals: array-like
+        The residuals/errors (y_test - predictions) used for analysis.
+    :return: None
+        This function displays the plots in the Streamlit app but does not return any value.
+    """
 
     fig_A = plot_scatter_real_vs_predicted(y_test, predictions)
     fig_B = plot_qq_diagram(residuals)
@@ -374,10 +429,3 @@ def visualise_performance(model, X, y, y_test, predictions, residuals):
                 """)
         st.markdown(fig_title)
         st.pyplot(fig_D)
-
-
-
-
-
-
-

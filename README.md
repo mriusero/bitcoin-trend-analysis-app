@@ -1,136 +1,166 @@
-# projet-sda-dash-streamlit
-This repository contains a Streamlit application designed for visualizing and analyzing data related to Bitcoin tweets and market trends. This project is undertaken within the Sorbonne Data Analytics learning context, focusing on data management, data visualization, and text mining.
+# Bitcoin Trend Analysis App
 
-  (1) The first step is the Data Management phase, carried out on jupyter_notebook with Pandas : 
+This repository contains a Streamlit application for visualizing and analyzing trends related to Bitcoin tweets and market data. Developed within the Sorbonne Data Analytics curriculum, this project focuses on data management, visualization, and text mining.
 
-    - Analysis and cleaning of the first dataset : Bitcoin Market History 
-    - Analysis and cleaning of the second dataset : Bitcoin Twitter History
-    - Cross time period identification and dataframe export for analysis
+## Project Overview
 
-  (2) The second step is the Data Visualisation phase, carried out on both dataframes :
+The project is organized into three main phases:
 
-    - Preprocessing with nltk (SnowballStemmer, Stopwords) 
-    - Adding value through new variables creation (Sentiment analysis with VaderSentiment, Times series aggregation, Wordcloud ...)             
-    - Statistics calculation and trends visualisation with Numpy, Scipy, Matplotlib 
+### 1. Data Management
 
-  (3) Analytics study of correlation between 'Bitcoin Market History' & 'Bitcoin Twitter History':
+Data preprocessing and analysis are conducted using Jupyter Notebooks with Pandas to prepare two key datasets:
 
-    - Modular Linear Regression Model creation with sklearn and streamlit widgets
-    - Prediction comparison to market with Dash Plotly 
-    - Prediction performance vizualisation with Numpy, Scipy, Matplotlib, Seaborn
+- **Bitcoin Market History:** Analysis and cleaning of historical market data.
+- **Bitcoin Twitter History:** Analysis and cleaning of tweet data related to Bitcoin.
+- **Cross-Referencing Time Periods:** Identifying overlapping time periods between datasets and exporting dataframes for further analysis.
 
+### 2. Data Visualization
+
+Data visualization and additional preprocessing are performed on both datasets:
+
+- **Preprocessing:** Utilizes NLTK tools (e.g., SnowballStemmer, stopwords) to process text.
+- **Feature Engineering:** Adds new variables for analysis, such as sentiment scores using VaderSentiment, time-series aggregation, and word clouds.
+- **Visualization & Trend Analysis:** Includes trend visualization and statistical calculations using Numpy, Scipy, and Matplotlib.
+
+### 3. Correlation and Predictive Analysis
+
+A correlation study between 'Bitcoin Market History' and 'Bitcoin Twitter History' is performed, with a predictive model for trend analysis:
+
+- **Modular Linear Regression Model:** Built using Scikit-Learn and Streamlit widgets for interactive exploration.
+- **Market Prediction Comparison:** Visualized with Dash Plotly to compare model predictions against market data.
+- **Prediction Performance Visualization:** Detailed performance metrics and visualizations using Numpy, Scipy, Matplotlib, and Seaborn.
 
 ## Project Structure
-    projet-sda-dash-streamlit
-    ├── README.md
-    ├── app
-    │   ├── app.py
-    │   ├── dashboard
-    │   │   ├── __init__.py
-    │   │   ├── components.py
-    │   │   ├── content
-    │   │   │   ├── __init__.py
-    │   │   │   ├── page0.py
-    │   │   │   ├── page1.py
-    │   │   │   ├── page2.py
-    │   │   │   ├── page3.py
-    │   │   │   ├── pageconclu.py
-    │   │   │   └── pageintro.py
-    │   │   ├── functions
-    │   │   │   ├── __init__.py
-    │   │   │   ├── model.py
-    │   │   │   ├── performance.py
-    │   │   │   ├── preprocessing.py
-    │   │   │   ├── sentiment_analysis.py
-    │   │   │   ├── utils.py
-    │   │   │   └── wordcloud.py
-    │   │   ├── layout.py
-    │   │   └── styles.css
-    │   └── data
-    │       ├── exploration
-    │       │   ├── dataset_exploration.ipynb
-    │       │   └── dataset_exploration.md
-    │       ├── input
-    │       │   ├── Bitcoin_tweets.csv
-    │       │   └── bitstampUSD_1-min_data_2012-01-01_to_2021-03-31.csv
-    │       ├── output
-    │       │   ├── Bitcoin_market_historical.csv
-    │       │   └── Bitcoin_tweets_historical.csv
-    │       └── sentiment
-    │           ├── preprocessed_data.csv
-    │           └── sentiment_analysis.csv
-    └── requirements.txt
 
+```plaintext
+projet-sda-dash-streamlit
+├── README.md
+├── app
+│   ├── app.py
+│   ├── dashboard
+│   │   ├── __init__.py
+│   │   ├── components.py
+│   │   ├── content
+│   │   │   ├── __init__.py
+│   │   │   ├── page0.py
+│   │   │   ├── page1.py
+│   │   │   ├── page2.py
+│   │   │   ├── page3.py
+│   │   │   ├── pageconclu.py
+│   │   │   └── pageintro.py
+│   │   ├── functions
+│   │   │   ├── __init__.py
+│   │   │   ├── model.py
+│   │   │   ├── performance.py
+│   │   │   ├── preprocessing.py
+│   │   │   ├── sentiment_analysis.py
+│   │   │   ├── utils.py
+│   │   │   └── wordcloud.py
+│   │   ├── layout.py
+│   │   └── styles.css
+│   └── data
+│       ├── exploration
+│       │   ├── dataset_exploration.ipynb
+│       │   └── dataset_exploration.md
+│       ├── input
+│       │   ├── Bitcoin_tweets.csv
+│       │   └── bitstampUSD_1-min_data_2012-01-01_to_2021-03-31.csv
+│       ├── output
+│       │   ├── Bitcoin_market_historical.csv
+│       │   └── Bitcoin_tweets_historical.csv
+│       └── sentiment
+│           ├── preprocessed_data.csv
+│           └── sentiment_analysis.csv
+└── requirements.txt
+```
 
 ## Installation
 
 ### Prerequisites
-- Python 3.8 or higher 
+
+- Python 3.8 or higher
 - pip (Python package installer)
 
 ### Clone the Repository
-    git clone https://github.com/mriusero/projet-sda-dash-streamlit.git
-    cd projet-sda-dash-streamlit
 
-## Create and Activate Virtual Environment (Optional but Recommended)
+```bash
+git clone https://github.com/mriusero/projet-sda-dash-streamlit.git
+cd projet-sda-dash-streamlit
+```
 
-### On macOS/Linux
-    python3 -m venv venv
-    source venv/bin/activate
+### Create and Activate Virtual Environment (Recommended)
 
-### On Windows
-    python -m venv venv
-    venv\Scripts\activate
+#### On macOS/Linux
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
 
-## Install Dependencies
-    pip install -r requirements.txt
+#### On Windows
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+### Install Dependencies
+```bash
+pip install -r requirements.txt
+```
 
 ## Running the Application
-To start the Streamlit application, run the following command from the root directory of the project:
- 
-    cd app 
-    streamlit run app/app.py
 
-## Project Details
+To start the Streamlit application, run the following from the root directory:
 
-- **app.py:** The main entry point of the Streamlit application.
-- **dashboard/:** Contains the components, layout, and content for the dashboard.
-- **data/:** Contains the input data files, exploratory notebooks, and preprocessed data outputs. 
+```bash
+cd app 
+streamlit run app/app.py
+```
+
+## Key Files and Directories
+
+- **app.py:** The main entry point for launching the Streamlit application.
+- **dashboard/:** Houses components, layout, and page content for the dashboard.
+- **data/:** Contains raw data, exploratory notebooks, and preprocessed outputs.
 
 ## Data Directory Structure
-    data
-    ├── exploration
-    │   ├── dataset_exploration.ipynb
-    │   └── dataset_exploration.md
-    ├── input
-    │   ├── Bitcoin_tweets.csv
-    │   └── bitstampUSD_1-min_data_2012-01-01_to_2021-03-31.csv
-    ├── output
-    │   ├── Bitcoin_market_historical.csv
-    │   └── Bitcoin_tweets_historical.csv
-    └── sentiment
-        ├── preprocessed_data.csv
-        └── sentiment_analysis.csv
+
+```plaintext
+data
+├── exploration
+│   ├── dataset_exploration.ipynb
+│   └── dataset_exploration.md
+├── input
+│   ├── Bitcoin_tweets.csv
+│   └── bitstampUSD_1-min_data_2012-01-01_to_2021-03-31.csv
+├── output
+│   ├── Bitcoin_market_historical.csv
+│   └── Bitcoin_tweets_historical.csv
+└── sentiment
+    ├── preprocessed_data.csv
+    └── sentiment_analysis.csv
+```
 
 ### Exploration
-- **dataset_exploration.ipynb:** A Jupyter notebook containing exploratory data analysis (EDA) of the datasets.
-- **dataset_exploration.md:** A markdown file summarizing the findings from the EDA notebook.
+- **dataset_exploration.ipynb:** Jupyter notebook for exploratory data analysis (EDA) of the datasets.
+- **dataset_exploration.md:** Markdown summary of findings from the EDA notebook.
 
 ### Input
-- **Bitcoin_tweets.csv:** This dataset contains raw tweet data related to Bitcoin. It includes tweet texts, timestamps, user information, and other relevant metadata.
-- **bitstampUSD_1-min_data_2012-01-01_to_2021-03-31.csv:** This dataset contains historical Bitcoin market data with one-minute intervals. It includes open, high, low, close prices, and trading volume.
+- **Bitcoin_tweets.csv:** Raw tweet data related to Bitcoin, including text, timestamps, and metadata.
+- **bitstampUSD_1-min_data_2012-01-01_to_2021-03-31.csv:** Historical Bitcoin market data at one-minute intervals, including price and volume.
 
 ### Output
-- **Bitcoin_market_historical.csv:** This dataset contains processed and cleaned Bitcoin market data, derived from the input dataset, used for further analysis and visualization.
-- **Bitcoin_tweets_historical.csv:** This dataset contains processed and cleaned tweet data, derived from the input dataset, used for sentiment analysis and trend detection.
+- **Bitcoin_market_historical.csv:** Cleaned and processed Bitcoin market data for analysis.
+- **Bitcoin_tweets_historical.csv:** Cleaned and processed tweet data for sentiment analysis and trend detection.
 
 ### Sentiment
-- **preprocessed_data.csv:** This dataset contains preprocessed data used for sentiment analysis. It includes cleaned and tokenized text data ready for sentiment scoring.
-- **sentiment_analysis.csv:** This dataset contains the results of the sentiment analysis performed on the preprocessed tweet data. It includes sentiment scores, categorized sentiments (positive, negative, neutral), and other relevant features.
+- **preprocessed_data.csv:** Tokenized text data ready for sentiment analysis.
+- **sentiment_analysis.csv:** Results of the sentiment analysis, including sentiment scores and categorized sentiments.
 
-## Personnal notes
-- Start: 2024-05-06
-- End: 024-06-16 
+## Project Timeline
+
+- **Start Date:** 2024-05-06
+- **End Date:** 2024-06-16
 
 ## License
-This project is licensed under the MIT License. See the LICENSE file for more details.
+
+This project is open-source and can be freely used and modified under the [MIT License](LICENSE).

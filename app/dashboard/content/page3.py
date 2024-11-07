@@ -3,7 +3,7 @@ from ..functions import prepare_data, predict, duration_to_seconds, load_csv, ag
 
 
 def page_3(market_data, tweet_data):
-    st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)
+    st.markdown('<div class="title">Bitcoin Trend Analysis App</div>', unsafe_allow_html=True)
     st.markdown('<div class="header">#3 Analytics</div>', unsafe_allow_html=True)
 
     concept = ("""

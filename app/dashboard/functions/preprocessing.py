@@ -7,13 +7,14 @@ from nltk.stem import SnowballStemmer
 from nltk.corpus import stopwords
 import ast
 
-nltk.download('stopwords')
+nltk.download('stopwords')   # Download required NLTK resources
 EN_stopwords = stopwords.words('english')
 FR_stopwords = stopwords.words('french')
 STOP_WORDS = set(EN_stopwords + FR_stopwords)
 
-STEMMER = SnowballStemmer("english")
+STEMMER = SnowballStemmer("english")  # Initialize the English Stemmer
 
+# Regular expression patterns for text cleaning
 PATTERNS = {
     "emoji": re.compile("["
                         "\U0001F600-\U0001F64F"
@@ -52,23 +53,40 @@ PATTERNS = {
 }
 
 def cleaning(text):
+    """
+    Cleans the input text by removing unwanted characters using predefined regex patterns.
+    :param text: The input text (string) to clean.
+    :return: The cleaned text as a string.
+    :raises ValueError: If the input is not a string.
+    """
     if pd.isnull(text):
         return text
     if isinstance(text, str):
-        text = text.encode('utf-8').decode('utf-8')
-    text = text.lower()
-    for pattern in PATTERNS.values():
+        text = text.encode('utf-8').decode('utf-8')  # Ensure proper encoding
+    text = text.lower()                              # Convert to lowercase
+    for pattern in PATTERNS.values():                # Remove unwanted patterns from the text
         text = pattern.sub('', text)
     return text
 
 
 def stop_words(text):
+    """
+    Removes stopwords from the input text based on predefined English and French stopwords.
+    :param text: The input text (string) to process.
+    :return: The text with stopwords removed.
+    """
     if pd.isnull(text):
         return text
     return ' '.join([word for word in text.split() if word not in STOP_WORDS])
 
 
 def stemmatise(text):
+    """
+    Stems the input text using the Snowball stemmer for English.
+    :param text: The input text (string) to stem.
+    :return: The stemmed text as a string.
+    :raises Exception: If an error occurs during stemming.
+    """
     try:
         return " ".join([STEMMER.stem(word) for word in text.split()])
     except Exception as e:
@@ -77,6 +95,11 @@ def stemmatise(text):
 
 
 def convert_hashtags(text):
+    """
+    Converts a string representation of a list of hashtags to a space-separated string of hashtags.
+    :param text: The input text containing a stringified list of hashtags.
+    :return: A space-separated string of hashtags, or the original text if conversion fails.
+    """
     try:
         hashtags = ast.literal_eval(text)
         if isinstance(hashtags, list):
@@ -87,6 +110,11 @@ def convert_hashtags(text):
 
 
 def preprocessing(tweet_data):
+    """
+    Performs preprocessing on tweet data by cleaning, removing stopwords, stemming, and merging with user data.
+    :param tweet_data: The dataframe containing tweet data.
+    :return: A dataframe containing the preprocessed tweet data.
+    """
     message_text = st.text("Preprocessing ... 0.00%")
 
     tweet_data.loc[:, 'hashtags'] = tweet_data['hashtags'].apply(convert_hashtags)

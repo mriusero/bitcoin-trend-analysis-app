@@ -3,6 +3,11 @@ from datetime import timedelta
 import pandas as pd
 
 def load_csv(file_path):
+    """
+    Load a CSV file into a pandas DataFrame. It automatically handles 'Timestamp' or 'date' columns and converts them to datetime.
+    :param file_path: Path to the CSV file to be loaded.
+    :return: A pandas DataFrame with datetime conversion applied to 'Timestamp' or 'date' column.
+    """
     df = pd.read_csv(file_path)
     if "Timestamp" in df.columns:
         df["Timestamp"] = pd.to_datetime(df["Timestamp"], utc=True)
@@ -11,6 +16,12 @@ def load_csv(file_path):
     return df
 
 def resample(df, frequency):
+    """
+    Resample the DataFrame to a specified frequency ('60min', '6H', '12H', 'Weekly', 'Daily').
+    :param df: The input pandas DataFrame containing the data to be resampled.
+    :param frequency: The frequency to resample the data. Options include '60min', '6H', '12H', 'Weekly', 'Daily'.
+    :return: A pandas DataFrame resampled at the specified frequency with relevant aggregated statistics.
+    """
     frequency_mapping = {
         '60min': 'h',
         '6H': '6h',
@@ -38,6 +49,11 @@ def resample(df, frequency):
     return display_data
 
 def word_chaining_and_count(text_count):
+    """
+    Counts the frequency of words in a given text and returns a sorted string of word counts.
+    :param text_count: A string of text in which word counts need to be calculated.
+    :return: A string with words and their counts, formatted as '[word, count]'.
+    """
     text_count = text_count.replace('[','')
     text_count = text_count.replace(']',' ')
     word_counts = Counter(text_count.split())
@@ -46,7 +62,11 @@ def word_chaining_and_count(text_count):
     return sorted_word_counts_str
 
 def calculate_statistics(df):
-
+    """
+    Calculates basic statistics (min, median, mean, std, max) for the numerical columns in the DataFrame.
+    :param df: The input DataFrame with numerical data.
+    :return: A pandas DataFrame containing calculated statistics (min, median, mean, std, max).
+    """
     if 'user_since_mean' in df.columns:
         df['user_since_mean'] = df['user_since_mean'].apply(duration_to_seconds)
         stat_df = df
@@ -65,6 +85,11 @@ def calculate_statistics(df):
     return statistics
 
 def duration_to_seconds(duration_str):
+    """
+    Converts a duration string (e.g., '1 days 03:15:45') into the total number of seconds.
+    :param duration_str: The duration as a string, e.g., '1 days 03:15:45'.
+    :return: The duration in total seconds (float). If the string is not in the expected format, returns None.
+    """
     if isinstance(duration_str, (int, float)):
         return float(duration_str)
 
@@ -80,6 +105,11 @@ def duration_to_seconds(duration_str):
         return None
 
 def seconds_to_duration(seconds):
+    """
+    Converts a duration in seconds to a readable string format ('X days HH:MM:SS').
+    :param seconds: The duration in seconds (float).
+    :return: A string representing the duration in the format 'X days HH:MM:SS'.
+    """
     duration = timedelta(seconds=seconds)
     days = duration.days
     hours, remainder = divmod(duration.seconds, 3600)

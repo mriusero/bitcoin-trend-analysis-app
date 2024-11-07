@@ -1,6 +1,6 @@
 import streamlit as st
 def page_0():
-    st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)
+    st.markdown('<div class="title">Bitcoin Trend Analysis App</div>', unsafe_allow_html=True)
     st.markdown("# #0 Data Management_")
     st.text("Here is the Jupyter Notebook of data management phase, starting from 'kaggle.com' original datasets.")
     st.text("______________________________________________________________________________________________________________________________________________")

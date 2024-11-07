@@ -6,19 +6,37 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from .utils import duration_to_seconds, seconds_to_duration, word_chaining_and_count
 
 def get_sentiment(tweet):
+    """
+    Calculates the sentiment score of the given tweet using the VADER SentimentIntensityAnalyzer.
+    :param tweet: The input tweet text (string).
+    :return: The sentiment score (float) where a positive value indicates a positive sentiment,
+             a negative value indicates a negative sentiment, and 0 indicates neutral sentiment.
+    """
     analyzer = SentimentIntensityAnalyzer()
     scores = analyzer.polarity_scores(tweet)
     return scores['compound']
 
 def calculate_sentiment(df):
+    """
+    Calculates sentiment scores for each tweet in the dataframe and stores the results in a new CSV file.
 
+    This function calculates the sentiment for both the tweet's text and user description using the
+    VADER sentiment analysis. It processes the dataframe in chunks to avoid memory overload.
+
+    :param df: The input dataframe containing tweet data.
+    :return: A path to the CSV file where sentiment analysis results are stored.
+    """
     sentiment_df = df.copy()
     message_text = st.text("Analyse de sentiment ... 0.00%")
+
     columns_to_cast = ['source', 'user_location', 'user_description', 'text', 'hashtags']
     sentiment_df[columns_to_cast] = sentiment_df[columns_to_cast].astype(str)
+
     sentiment_df['user_since']=sentiment_df['user_since'].apply(duration_to_seconds)
+
     sentiment_df['source'] = sentiment_df['source'].apply(lambda x: '[' + x.lower().replace(' ', '_') + ']')
     sentiment_df['user_location'] = sentiment_df['user_location'].apply(lambda x: '[' + x.lower().replace(' ', '_') + ']')
+
     nb_tweet = len(sentiment_df['text'])
     chunk_size = 2500
     nb_chunks = nb_tweet // chunk_size + 1
@@ -28,16 +46,29 @@ def calculate_sentiment(df):
         start_idx = i * chunk_size
         end_idx = min((i + 1) * chunk_size, nb_tweet)
         chunk_df = sentiment_df.iloc[start_idx:end_idx]
+
         chunk_df.loc[:, 'sentiment_text'] = chunk_df['text'].apply(get_sentiment)
         chunk_df.loc[:,'sentiment_user'] = chunk_df['user_description'].apply(get_sentiment)
+
         if not chunk_df.empty:
             global_df = pd.concat([global_df, chunk_df], ignore_index=False)
+
         progress = end_idx
         percentage = round((progress / nb_tweet) * 100, 2)
         message_text.text(f"Analyse de sentiment ({progress}/{nb_tweet} tweets) {percentage}%")
 
     return global_df.to_csv(f"./data/sentiment/sentiment_analysis.csv")
+
+
 def aggregate_sentiment(df, frequency):
+    """
+    Aggregates sentiment data by a given time frequency (e.g., daily, weekly, etc.) and calculates
+    various statistics for the aggregated data.
+
+    :param df: The input dataframe containing sentiment data.
+    :param frequency: The frequency for aggregation. Options include '60min', '6H', '12H', 'Weekly', 'Daily'.
+    :return: A dataframe containing aggregated sentiment data.
+    """
     frequency_mapping = {
         '60min': 'h',
         '6H': '6h',
@@ -45,8 +76,7 @@ def aggregate_sentiment(df, frequency):
         'Weekly': 'W',
         'Daily': 'D'
     }
-    global_df = df.groupby(pd.Grouper(key='date', freq=frequency_mapping[frequency])).agg(
-             {
+    global_df = df.groupby(pd.Grouper(key='date', freq=frequency_mapping[frequency])).agg({
             'sentiment_text': 'mean',
             'sentiment_user': 'mean',
             'user_since':'mean',
@@ -59,22 +89,25 @@ def aggregate_sentiment(df, frequency):
             'user_location':'sum',
             'source': 'sum',
             'hashtags': 'sum'
-             }
+         }
     ).reset_index()
     global_df.dropna(inplace=True)
-    global_df.columns = ['date',
-                         'text_sentiment_mean',
-                         'user_sentiment_mean',
-                         'user_since_mean',
-                         'text', 'tweet_sum',
-                         'user_description',
-                         'followers_sum',
-                         'friends_sum',
-                         'favorites_sum',
-                         'verified_sum',
-                         'location_sum',
-                         'source_sum',
-                         'hashtags_sum']
+    global_df.columns = [
+        'date',
+        'text_sentiment_mean',
+        'user_sentiment_mean',
+        'user_since_mean',
+        'text', 'tweet_sum',
+        'user_description',
+        'followers_sum',
+        'friends_sum',
+        'favorites_sum',
+        'verified_sum',
+        'location_sum',
+        'source_sum',
+        'hashtags_sum'
+    ]
+
     global_df['user_since_mean'] = global_df['user_since_mean'].apply(seconds_to_duration)
     global_df['words'] = global_df['text'] + global_df['user_description']
     global_df = global_df.assign(

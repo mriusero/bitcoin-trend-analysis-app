@@ -14,6 +14,12 @@ greenmoney="#7DEFA1"
 greenlemon="#1bef22"
 
 def gaussian_curve(column_data):
+    """
+    Plots a Gaussian curve and histogram for a given data column.
+    :param column_data: A Pandas Series or array containing the data.
+    :return: A Matplotlib figure object displaying the Gaussian curve and histogram.
+    :raises ValueError: If the input data is empty.
+    """
     mu, sigma = norm.fit(column_data)
     xmin, xmax = min(column_data), max(column_data)
     x = np.linspace(xmin, xmax, 100)
@@ -42,6 +48,11 @@ def gaussian_curve(column_data):
     return fig
 
 def combined_volume_curve(df):
+    """
+    Plots a combined volume chart with BTC volume, currency volume, and weighted price.
+    :param df: A DataFrame containing the columns 'Volume_(BTC)', 'Volume_(Currency)', and 'Weighted_Price'.
+    :return: A Matplotlib figure object displaying the combined volume chart.
+    """
     df['date'] = df.index.strftime('%y-%m-%d')
     fig, ax1 = plt.subplots(figsize=(12, 8))
 
@@ -102,6 +113,11 @@ def combined_volume_curve(df):
 
 
 def create_candlestick_chart1(df):
+    """
+    Creates a candlestick chart with a weighted price overlay.
+    :param df: A DataFrame containing columns for 'Open', 'High', 'Low', 'Close', and 'Weighted_Price'.
+    :return: A Plotly figure object containing the candlestick chart with weighted price.
+    """
     fig = go.Figure()
     fig.add_trace(go.Candlestick(x=df.index,
                                  open=df["Open"],
@@ -123,15 +139,20 @@ def create_candlestick_chart1(df):
                       xaxis_rangeslider_visible=False,
                       margin = dict(l=50, r=50, t=20, b=50),
                       xaxis = dict(
-                          tickfont=dict(size=15)  # Ajustez la taille de la police pour l'axe x
+                          tickfont=dict(size=15)
                       ),
                       yaxis = dict(
-                          tickfont=dict(size=15)  # Ajustez la taille de la police pour l'axe y
+                          tickfont=dict(size=15)
                       )
     )
     return fig
 
 def create_candlestick_chart2(df):
+    """
+    Creates a candlestick chart with a prediction overlay.
+    :param df: A DataFrame containing columns for 'date', 'Open', 'High', 'Low', 'Close', and 'prediction'.
+    :return: A Plotly figure object containing the candlestick chart with predictions.
+    """
     fig = go.Figure(data=[go.Candlestick(x=df['date'],
                                          open=df["Open"],
                                          high=df["High"],
@@ -140,7 +161,6 @@ def create_candlestick_chart2(df):
                                          )
                           ]
     )
-    # Ajout de la courbe des prédictions
     fig.add_trace(go.Scatter(x=df['date'],
                              y=df['prediction'],
                              mode='lines',
@@ -148,8 +168,6 @@ def create_candlestick_chart2(df):
                              line=dict(color=blue_curve, width=2)
                              )
     )
-
-    # Mise en forme du graphique
     fig.update_layout(
                       title='',
                       height=500,
@@ -157,10 +175,10 @@ def create_candlestick_chart2(df):
                       xaxis_rangeslider_visible=False,
                       margin=dict(l=50, r=50, t=20, b=50),
                       xaxis=dict(
-                          tickfont=dict(size=15)  # Ajustez la taille de la police pour l'axe x
+                          tickfont=dict(size=15)
                       ),
                       yaxis=dict(
-                          tickfont=dict(size=15)  # Ajustez la taille de la police pour l'axe y
+                          tickfont=dict(size=15)
                       ),
     )
     return fig

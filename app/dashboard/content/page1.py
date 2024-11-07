@@ -3,7 +3,7 @@ from ..components import create_candlestick_chart1, gaussian_curve, combined_vol
 from ..functions import resample, calculate_statistics
 
 def page_1(market_data):
-    st.markdown('<div class="title">SDA_2024</div>', unsafe_allow_html=True)                            #TITLE
+    st.markdown('<div class="title">Bitcoin Trend Analysis App</div>', unsafe_allow_html=True)                            #TITLE
     st.markdown('<div class="header">#1 BTC Market History [A]</div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns([3,2])
