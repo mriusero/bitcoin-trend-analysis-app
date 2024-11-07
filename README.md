@@ -1,6 +1,6 @@
 # Bitcoin Trend Analysis App
 
-This repository contains a Streamlit application for visualizing and analyzing trends related to Bitcoin tweets and market data. Developed within the Sorbonne Data Analytics curriculum, this project focuses on data management, visualization, and text mining.
+This repository contains a Streamlit application for visualizing and analyzing trends related to Bitcoin tweets and market data. Developed within a learning context, this project focuses on data management, visualization, and text mining.
 
 ## Project Overview
 
