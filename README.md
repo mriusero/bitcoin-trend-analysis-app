@@ -156,11 +156,6 @@ data
 - **preprocessed_data.csv:** Tokenized text data ready for sentiment analysis.
 - **sentiment_analysis.csv:** Results of the sentiment analysis, including sentiment scores and categorized sentiments.
 
-## Project Timeline
-
-- **Start Date:** 2024-05-06
-- **End Date:** 2024-06-16
-
 ## License
 
 This project is open-source and can be freely used and modified under the [MIT License](LICENSE).
